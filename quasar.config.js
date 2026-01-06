@@ -37,11 +37,11 @@ export default defineConfig((/* ctx */) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
     build: {
       target: {
-        browser: [ 'es2022', 'firefox115', 'chrome115', 'safari14' ],
-        node: 'node20'
+	browser: [ 'es2022', 'firefox115', 'chrome115', 'safari14' ],
+	node: 'node20'
       },
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -59,7 +59,7 @@ export default defineConfig((/* ctx */) => {
 
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
-      
+
       // vitePlugins: [
       //   [ 'package-name', { ..pluginOptions.. }, { server: true, client: true } ]
       // ]
@@ -109,10 +109,10 @@ export default defineConfig((/* ctx */) => {
     // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
     ssr: {
       prodPort: 3000, // The default port that the production server should use
-                      // (gets superseded if process.env.PORT is specified at runtime)
+		      // (gets superseded if process.env.PORT is specified at runtime)
 
       middlewares: [
-        'render' // keep this as last one
+	'render' // keep this as last one
       ],
 
       // extendPackageJson (json) {},
@@ -169,22 +169,22 @@ export default defineConfig((/* ctx */) => {
       bundler: 'packager', // 'packager' or 'builder'
 
       packager: {
-        // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
+	// https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
 
-        // OS X / Mac App Store
-        // appBundleId: '',
-        // appCategoryType: '',
-        // osxSign: '',
-        // protocol: 'myapp://path',
+	// OS X / Mac App Store
+	// appBundleId: '',
+	// appCategoryType: '',
+	// osxSign: '',
+	// protocol: 'myapp://path',
 
-        // Windows only
-        // win32metadata: { ... }
+	// Windows only
+	// win32metadata: { ... }
       },
 
       builder: {
-        // https://www.electron.build/configuration/configuration
+	// https://www.electron.build/configuration/configuration
 
-        appId: 'adminium'
+	appId: 'adminium'
       }
     },
 

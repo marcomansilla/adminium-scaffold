@@ -1,1 +1,14 @@
 // app global css in SCSS form
+.center {
+    text-align: center !important;
+    margin: auto !important;
+}
+
+
+.add-btn {
+    background: $primary;
+    color: #fff;
+    position: absolute;
+    bottom:5em;
+    right:5em;
+}
