@@ -25,7 +25,7 @@ q-page.q-pa-md
  import { ref, onMounted } from 'vue';
  import { useUsersStore } from 'stores/users.js';
  import { storeToRefs } from 'pinia';
- import DialogComponent from '../components/DialogComponent.vue';
+
  const user = ref({
    fullname: '',
    email: '',
