@@ -1,13 +1,17 @@
 <template lang="pug">
 q-page.q-pa-md
   h3 Usuarios
+  q-input.full-width(label="Filtrar" v-model="filter_text" )
+    q-icon(name="filter_alt" size="lg")
+  br
+  br
   q-table(
     v-model:pagination="pagination"
     :filter="filter_text"
     @request="(props) => onRequest(props, 'users', 'users/admin/users', filter_text, filter_fields)"
     title="Usuarios"
     :columns="columns"
-    :rows="all_users")
+    :rows="users")
     template(v-slot:body-cell-open="props")
       q-td(:props="props")
         q-btn(icon="remove_red_eye" color="primary" round size="sm" @click="openUserDialog(props.row)")
@@ -28,10 +32,10 @@ q-page.q-pa-md
  import { ref, onMounted, computed } from 'vue';
  import { useUsersStore } from 'stores/users.js';
  import { useRequests } from '../composables/requestor';
- import { storeToRefs } from 'pinia';
 
  const { getAllData, deleteRecord, createRecord, updateRecord, modules, onRequest } = useRequests();
  const filter_text = ref('');
+ const filter_fields = 'fullname, dni, email, matricula'
  const user = ref({
    fullname: '',
    email: '',
@@ -42,12 +46,11 @@ q-page.q-pa-md
    birthday: '',
    has_login: false
  })
- const all_users = computed(() => modules.users?.data);
+ const users = computed(() => modules.users?.data);
  const pagination = computed(() => modules.users?.pagination);
  const operation = ref('New')
  const enableUserDialog = ref(false)
  const enableEditUserDialog = ref(false)
- const store = useUsersStore();
  const columns = [
    { name: 'fullname', align: 'left', label: 'Nombre completo', field: 'fullname', sortable: true },
    { name: 'email', align: 'left',label: 'E-mail', field: 'email', sortable: false },
@@ -91,7 +94,6 @@ q-page.q-pa-md
  }
  onMounted(() => {
    getAllData('users', 'users/admin/users')
-   store.getUsers();
  })
 </script>
 
