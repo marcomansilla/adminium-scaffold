@@ -14,39 +14,49 @@ q-layout(view="lHh Lpr lFf")
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+ import { ref, onBeforeMount } from 'vue'
+ import EssentialLink from 'components/EssentialLink.vue'
+ import { useValidator } from '../composables/validator'
+ import { useRequests } from '../composables/requestor'
 
-const linksList = [
-  {
-    title: 'Inicio',
-    caption: 'Inicio',
-    icon: 'home',
-    link: '/'
-  },
-  {
-    title: 'Usuarios',
-    caption: 'Usuarios del sistema',
-    icon: 'people',
-    link: '/admin/users'
-  },
-  {
-    title: 'CIAS',
-    caption: 'Companias',
-    icon: 'business',
-    link: '/admin/cias'
-  },
-  {
-    title: 'Perfil',
-    caption: 'Perfil de usuario',
-    icon: 'person',
-    link: '/admin/user/profile'
-  }
-]
+ const { initializeErrors } = useValidator()
+ const { initializeModule } = useRequests()
 
-const leftDrawerOpen = ref(false)
+ const linksList = [
+   {
+     title: 'Inicio',
+     caption: 'Inicio',
+     icon: 'home',
+     link: '/'
+   },
+   {
+     title: 'Usuarios',
+     caption: 'Usuarios del sistema',
+     icon: 'people',
+     link: '/admin/users'
+   },
+   {
+     title: 'CIAS',
+     caption: 'Companias',
+     icon: 'business',
+     link: '/admin/cias'
+   },
+   {
+     title: 'Perfil',
+     caption: 'Perfil de usuario',
+     icon: 'person',
+     link: '/admin/user/profile'
+   }
+ ]
 
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
+ const leftDrawerOpen = ref(false)
+
+ const toggleLeftDrawer = () => {
+   leftDrawerOpen.value = !leftDrawerOpen.value
+ }
+
+ onBeforeMount(() => {
+   initializeErrors('users')
+   initializeModule('users')
+ })
 </script>

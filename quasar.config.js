@@ -50,7 +50,10 @@ export default defineConfig((/* ctx */) => {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: {
+	VITE_BASE_API: process.env.VITE_BASE_API || 'http://localhost:3000/api',
+	VITE_APP_NAME: process.env.VITE_APP_NAME || 'Mi Aplicación',
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export const useRequestStore = defineStore('requests', {
   state: () => ({
-    BASE_URL: process.env.VITE_BASE_API,
+    BASE_URL: import.meta.env.VITE_BASE_API,
     modules: {},
   }),
 
@@ -25,8 +25,8 @@ export const useRequestStore = defineStore('requests', {
       await axios
 	.get(`${this.BASE_URL}/${uri}`, params)
 	.then((res) => {
-	  this.modules[module].data = res.data.data.data;
-	  this.modules[module].pagination = res.data.data.pagination;
+	  this.modules[module].data = res.data.data;
+	  this.modules[module].pagination = res.data.pagination;
 	})
 	.catch((err) => {
 	  console.log(err);

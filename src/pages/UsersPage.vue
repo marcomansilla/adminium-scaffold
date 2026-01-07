@@ -2,9 +2,12 @@
 q-page.q-pa-md
   h3 Usuarios
   q-table(
+    v-model:pagination="pagination"
+    :filter="filter_text"
+    @request="(props) => onRequest(props, 'users', 'users/admin/users', filter_text, filter_fields)"
     title="Usuarios"
     :columns="columns"
-    :rows="store.users")
+    :rows="all_users")
     template(v-slot:body-cell-open="props")
       q-td(:props="props")
         q-btn(icon="remove_red_eye" color="primary" round size="sm" @click="openUserDialog(props.row)")
@@ -18,14 +21,17 @@ q-page.q-pa-md
       q-card-section.row.items-center.q-pb-none.text-h6 {{operation}}
       q-card-section
         p {{user}}
-  p {{enableUserDialog}}
+
 </template>
 
 <script setup>
- import { ref, onMounted } from 'vue';
+ import { ref, onMounted, computed } from 'vue';
  import { useUsersStore } from 'stores/users.js';
+ import { useRequests } from '../composables/requestor';
  import { storeToRefs } from 'pinia';
 
+ const { getAllData, deleteRecord, createRecord, updateRecord, modules, onRequest } = useRequests();
+ const filter_text = ref('');
  const user = ref({
    fullname: '',
    email: '',
@@ -36,7 +42,8 @@ q-page.q-pa-md
    birthday: '',
    has_login: false
  })
-
+ const all_users = computed(() => modules.users?.data);
+ const pagination = computed(() => modules.users?.pagination);
  const operation = ref('New')
  const enableUserDialog = ref(false)
  const enableEditUserDialog = ref(false)
@@ -83,6 +90,7 @@ q-page.q-pa-md
    }
  }
  onMounted(() => {
+   getAllData('users', 'users/admin/users')
    store.getUsers();
  })
 </script>

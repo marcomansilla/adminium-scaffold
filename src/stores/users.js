@@ -4,7 +4,8 @@ import axios from 'axios';
 
 export const useUsersStore = defineStore('myStore', {
   state: () => ({
-    users:[]
+    users:[],
+    BASE_URL: import.meta.env.VITE_BASE_API
   }),
 
   getters: {
@@ -13,7 +14,7 @@ export const useUsersStore = defineStore('myStore', {
 
   actions: {
     async getUsers() {
-      await axios.get('http://localhost:3100/users/admin/users')
+      await axios.get(`${this.BASE_URL}/users/admin/users`)
 	.then(res => {this.users = res.data})
 	.catch(err => console.log(err))
     }
