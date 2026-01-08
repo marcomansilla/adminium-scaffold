@@ -56,7 +56,7 @@ q-layout(view="lHh Lpr lFf")
  }
 
  onBeforeMount(() => {
-   initializeErrors('users')
    initializeModule('users')
+   initializeErrors('users')
  })
 </script>
