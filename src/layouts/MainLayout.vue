@@ -58,5 +58,7 @@ q-layout(view="lHh Lpr lFf")
  onBeforeMount(() => {
    initializeModule('users')
    initializeErrors('users')
+   initializeModule('cias')
+   initializeErrors('cias')
  })
 </script>

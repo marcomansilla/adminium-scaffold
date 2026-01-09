@@ -115,7 +115,6 @@ q-form.q-pa-md
     q-btn(:label="props.extraBtn.text" :color="props.extraBtn.color" v-if="props.extraBtn.display" @click="actionExtra()" :size="props.submitBtn.size || 'md'" :icon="props.submitBtn.icon || 'close'")
 
     q-space
-    p {{Errors[props.formname]}}
 </template>
 
 <script setup>
