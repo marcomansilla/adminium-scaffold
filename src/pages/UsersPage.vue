@@ -17,7 +17,7 @@ q-page.q-pa-md
         q-btn(icon="remove_red_eye" color="primary" round size="sm" @click="openUserDialog(props.row)")
     template(v-slot:body-cell-delete="props")
       q-td(:props="props")
-        q-btn(icon="delete" color="red" round size="sm")
+        q-btn(icon="delete" color="red" round size="sm" @click="removeUser(props.row.id)")
   q-btn.add-btn(icon="add" round size="xl" @click="openUserDialog()")
 
 
@@ -31,7 +31,8 @@ q-page.q-pa-md
           formname="users"
           :rules="userFormRules"
           :extraBtn="{text: 'Cancelar', color:'red', display:true}"
-          :actionSubmit="handleUser")
+          :actionExtra="cancelForm"
+          :actionSubmit="handleForm")
 
 
 </template>
@@ -40,12 +41,17 @@ q-page.q-pa-md
  import { useQuasar } from 'quasar';
  import { ref, onMounted, computed } from 'vue';
  import { useUsersStore } from 'stores/users.js';
+ import { GlobalNotificator } from '../composables/notificator.js';
  import { useRequests } from '../composables/requestor';
- import FormBuilderComponent from '../components/FormBuilderComponent.vue';
+ import { useValidator } from '../composables/validator.js';
  import { userModel, userFormRules, userFormFields } from '../models/user.js';
+ import { normalizeDate } from '../composables/dateHandler';
+ import FormBuilderComponent from '../components/FormBuilderComponent.vue';
 
 
  // Required variables
+ const $q = useQuasar();
+ const { validate, clearError, Errors, clearAllFormErrors, injectError } = useValidator();
  const { getAllData, deleteRecord, createRecord, updateRecord, modules, onRequest } = useRequests();
  const filter_text = ref('');
  const filter_fields = 'fullname, dni, email, matricula'
@@ -63,10 +69,11 @@ q-page.q-pa-md
    { name: 'open', align: 'left',label: 'Ver', sortable: false },
    { name: 'delete', align: 'left',label: 'Eliminar', sortable: false },
  ]
- const handleUser = () => {
-   console.log(userModel.value)
- }
 
+ const cancelForm = () => {
+   resetUser();
+   open_dialog.value = false;
+ }
  const openUserDialog = (data=null) => {
    if (data) {
      user.value = data;
@@ -78,8 +85,58 @@ q-page.q-pa-md
    open_dialog.value = true
  }
 
+  const handleForm = async () => {
+   validate('users', user.value, userFormRules)
+   if (!Errors.users.errors_data.count) {
+     let res = {};
+     user.value.birthday = normalizeDate(user.value.birthday)
+     if (user.value.id) {
+       res = await updateRecord('users', 'users/admin/user', user.value);
+       if ([200, 201].includes(res.status)) {
+         res.data.message && GlobalNotificator(res.data.message, 'positive');
+         resetUser();
+         open_dialog.value = false;
+       } else {
+         GlobalNotificator('Por favor revise el formulario', 'negative');
+         Object.keys(res.errors).forEach(e => {
+           injectError('users', e, res.errors[e])
+         })
+       }
+     } else {
+       res = await createRecord('users', 'users/admin/users', user.value)
+       if ([200, 201].includes(res.status)) {
+         res.data.message && GlobalNotificator(res.data.message, 'positive');
+         resetUser();
+         open_dialog.value = false;
+       } else {
+         GlobalNotificator('Por favor revise los valores', 'negative');
+         Object.keys(res.errors).forEach(e => {
+           injectError('users', e, res.errors[e])
+         })
+       }
+     }
+   }
+   getAllData('users', '/users/admin/users', pagination.value)
+ }
+
+ const removeUser = (id) => {
+   $q.dialog({
+     title: 'Confirme',
+     message: 'Seguro que desea eliminar el registro?',
+     cancel: true,
+     persistent: true,
+   }).onOk(async () => {
+     const res = await deleteRecord('users', `users/admin/user/${id}`)
+     if (res.status == 200) {
+       res.data.message && GlobalNotificator(res.data.message, 'positive');
+       getAllData('users', 'users/admin/users', pagination.value)
+     } else {
+       res.data.message && GlobalNotificator(res.data.message, 'negative');
+     }
+   });
+ }
  const resetUser = () => {
-   user.value = userModel.value
+   user.value = JSON.parse(JSON.stringify(userModel.value))
  }
  onMounted(() => {
    getAllData('users', 'users/admin/users')

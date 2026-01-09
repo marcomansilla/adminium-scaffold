@@ -46,11 +46,14 @@ export const useRequestStore = defineStore('requests', {
       }
       return response;
     },
+    
     async updateRecord(module, uri, payload) {
-      console.log(payload);
       let response = {};
+      const data = JSON.parse(JSON.stringify(payload))
+      const record_id = data['id'];
+      delete data.record_id
       try {
-	const res = await axios.put(`${this.BASE_URL}/${uri}`, payload);
+	const res = await axios.put(`${this.BASE_URL}/${uri}/${record_id}`, data);
 	if ([200, 201, 204].includes(res.status)) {
 	  response = res;
 	} else {
@@ -60,23 +63,26 @@ export const useRequestStore = defineStore('requests', {
 	  );
 	}
       } catch (error) {
+	response.status = error.status
 	response.data = error.response;
       }
-      return response.data;
+      return response;
     },
-    async deleteRecord(module, payload) {
-      let response = {};
-      await axios
-	.delete(`${this.BASE_URL}/delete/${module}`, {
-	  data: payload,
-	})
-	.then((res) => {
-	  response = res;
-	})
-	.catch((err) => {
-	  response.data = error.response.data;
-	});
-      return response.data;
-    },
+    async deleteRecord(module, uri) {
+      try {
+	const res = await axios.delete(
+	  `${this.BASE_URL}/${uri}`
+	);
+	return {
+	  status: res.status,
+	  data: res.data
+	};
+      } catch (err) {
+	return {
+	  status: err.response?.status ?? 500,
+	  data: err.response?.data ?? null
+	};
+      }
+    }
   },
 });

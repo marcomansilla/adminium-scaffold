@@ -53,7 +53,7 @@ export const useFormValidatorStore = defineStore('formValidator', {
         this.form_errors[formname].errors_data.count = this.form_errors[formname].errors_data.fields.length;
       },
       clearAllFormErrors(formname) {
-        this.createFormErrors(formname)
+        this.initializeFormValidator(formname)
       }
     },
 });

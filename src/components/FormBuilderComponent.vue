@@ -1,5 +1,5 @@
 <template lang="pug">
-q-form
+q-form.q-pa-md
   template(v-for="field in fields" :key="field.name")
     q-input(
       v-if="field.type === 'text' || field.type === 'number'"
@@ -70,7 +70,8 @@ q-form
       :hint="field.hint"
       left-label
       v-model="formData[field.name]"
-      :color="field.color || 'primary'")
+      :color="field.color || 'primary'"
+      @update:model-value="() => {setFilterValues(formname, field.name, val)}")
     q-file(
       v-else-if="field.type === 'file'"
       :hint="field.hint"
@@ -107,21 +108,25 @@ q-form
                 q-btn(v-close-popup label="Cerrar" color="primary" flat)
 
   slot(name="extras")
-  .float-right.q-mb-md
+  q-space
+  .float-right.q-mb-md.q-mt-xl
     q-btn(@click="handleSubmit()" :label="props.submitBtn.text"  color="primary" :size="props.submitBtn.size || 'md'" :icon="props.submitBtn.icon || 'save'")
     span &nbsp
     q-btn(:label="props.extraBtn.text" :color="props.extraBtn.color" v-if="props.extraBtn.display" @click="actionExtra()" :size="props.submitBtn.size || 'md'" :icon="props.submitBtn.icon || 'close'")
+
+    q-space
+    p {{Errors[props.formname]}}
 </template>
 
 <script setup>
-  import { onMounted, ref } from 'vue';
+  import { onMounted, ref, onUnmounted } from 'vue';
   import { useValidator } from '../composables/validator.js';
   import { GlobalNotificator } from '../composables/notificator.js';
   import { xignus_locale } from '../composables/dateHandler';
 
   const filters = ref({});
   const filteredValues = ref({});
-  const { validate, clearError, Errors, injectError } = useValidator();
+  const { validate, clearError, Errors, injectError, clearAllFormErrors } = useValidator();
   const formData = defineModel();
   const props = defineProps({
     fields: Array,
@@ -181,13 +186,14 @@ q-form
     })
   }
 
-  const setFilterValues = (formname, field) => {
+  const setFilterValues = (formname, field, value) => {
     clearError(formname, field);
     if (filteredValues.value[field]) {
       formData.value[field] = filteredValues.value[field].value;
     } else {
-      formData.value[field] = null;
+      formData.value[field] = value ?? false;
     }
+    console.log(formData.value[field])
   }
   const handleSubmit = () => {
     validate(props.formname, formData.value, props.rules)
@@ -212,6 +218,10 @@ q-form
   onMounted(() => {
     initializeFilters()
   })
+
+ onUnmounted(() => {
+   clearAllFormErrors(props.formname)
+ })
 </script>
 
 <style lang="scss">

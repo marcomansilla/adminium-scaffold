@@ -2,19 +2,34 @@
 export const normalizeDate = (value) => {
   if (!value) return null;
 
+  let day, month, year;
+
+  // Caso Date
   if (value instanceof Date && !isNaN(value)) {
-    value.setUTCHours(0, 0, 0, 0);
-    return value;
+    year = value.getFullYear();
+    month = value.getMonth() + 1;
+    day = value.getDate();
   }
 
-  if (typeof value === "string") {
-    const [day, month, year] = value.split('/').map(Number);
-    if (!day || !month || !year) return null;
-    return new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+  // Caso string dd/mm/yyyy (con o sin hora)
+  if (typeof value === 'string') {
+    const [datePart] = value.trim().split(' ');
+    const parts = datePart.split('/').map(Number);
+
+    if (parts.length !== 3) return null;
+
+    [day, month, year] = parts;
   }
 
-  return null;
+  if (!day || !month || !year) return null;
+
+  // Pad para formato ISO
+  const mm = String(month).padStart(2, '0');
+  const dd = String(day).padStart(2, '0');
+
+  return `${year}-${mm}-${dd}`;
 };
+
 
 // Translates JS date object to DD/MM/YYYY
 export const convertDate = (date) => {
