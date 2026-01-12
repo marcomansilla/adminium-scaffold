@@ -24,6 +24,9 @@ export function useRequests() {
     return store.deleteRecord(module, payload);
   };
 
+  const getModuleData = (module, uri, field) => {
+    return store.getModuleData(module, uri, field);
+  }
   const onRequest = (props, module, uri, filter_text, filter_fields) => {
     props.pagination.filter_text = filter_text;
     props.pagination.filter_fields = filter_fields;
@@ -33,6 +36,7 @@ export function useRequests() {
   return {
     initializeModule,
     getAllData,
+    getModuleData,
     createRecord,
     updateRecord,
     deleteRecord,

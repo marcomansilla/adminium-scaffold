@@ -17,7 +17,7 @@ export const ciaModel = ref({
 });
 
 export const ciaFormRules = {
-  name: [required, minLength(6)],
+  name: [required, minLength(2)],
   address: [required],
   phone: [required],
   email: [required, email],

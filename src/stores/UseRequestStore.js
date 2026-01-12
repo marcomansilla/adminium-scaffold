@@ -83,6 +83,20 @@ export const useRequestStore = defineStore('requests', {
 	  data: err.response?.data ?? null
 	};
       }
-    }
+    },
+    async getModuleData(module, uri, field) {
+      let response = {}
+      await axios
+	.get(`${this.BASE_URL}/${uri}`)
+	.then((res) => {
+	  this.modules[module][field] = res.data.data;
+	  response = res;
+	})
+	.catch((err) => {
+	  response.status = error.status
+	  response.data = error.response;
+	});
+      return response;
+    },
   },
 });
