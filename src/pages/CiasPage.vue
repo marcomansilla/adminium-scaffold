@@ -42,6 +42,7 @@ q-page.q-pa-md
       q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white Productores para {{cia.name}}
       q-card-section
        cia-users-component(:users="cia_users" :cia="cia" @updateData="updateData")
+       q-btn.q-mt-md.full-width(label="Cerrar" icon="close" @click="open_relations=false" color="primary")
 </template>
 
 <script setup>
@@ -154,7 +155,6 @@ q-page.q-pa-md
  }
  onMounted(() => {
    getAllData('cias', 'cias/admin/cias')
-   console.log('UPDATE!', cia.value)
  })
 
  const updateData = async () => {
@@ -164,7 +164,7 @@ q-page.q-pa-md
  const showCiaUsers = async (data) => {
     cia.value = JSON.parse(JSON.stringify(data));
     GlobalNotificator('Consultando...', 'positive');
-    const res = await getModuleData('cias', `cias/admin/cia_relations?id=${cia.value.id}`, 'cia_users');
+    const res = await getModuleData('cias', `cias/admin/cia_relations/${cia.value.id}`, 'cia_users');
      if (res.status == 200) {
        res.data.message && GlobalNotificator(res.data.message, 'positive');
        cia_users.value = modules.cias.cia_users;

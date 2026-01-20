@@ -23,7 +23,6 @@
         @filter="filterFn")
     .col-4.q-pl-md.q-pr-md
       q-btn.center.full-width(label="Agregar" color="primary" icon="save" size="md" @click="addRelation" :disabled="selected_id == null")
-  p {{selected_id}}
 </template>
 
 <script setup>
@@ -33,7 +32,7 @@
 
  const emit = defineEmits(['updateData'])
  const selected_id = ref(null)
- const { modules, getModuleData, createRecord } = useRequests();
+ const { modules, getModuleData, createRecord, deleteRecord } = useRequests();
  const users = ref([]);
  const props = defineProps(['users', 'cia']);
  const filter_text = ref('');
@@ -46,14 +45,13 @@
  const addRelation = async () => {
    const payload = {user_id: selected_id.value.value, cia_id: props.cia.id};
    const res = await createRecord('cias', 'cias/admin/relations',payload);
-   console.log(res)
    if ([200, 201].includes(res.status)) {
      res.data.message && GlobalNotificator(res.data.message, 'positive');
      await getModuleData('cias', `cias/admin/users/forcia?cia_id=${props.cia.id}`, 'usersforcia')
-     await getModuleData('cias', `cias/admin/cia_relations?id=${props.cia.id}`, 'cia_users');
+     await getModuleData('cias', `cias/admin/cia_relations/${props.cia.id}`, 'cia_users');
      emit('updateData')
      users.value = modules.cias.cia_users
-     console.log('refresed', users)
+     selected_id.value = null
    } else (
      GlobalNotificator('Ha ocurrido un error', 'negative')
    )
@@ -78,6 +76,19 @@
    })
  }
 
+ const removeUserFromCia = async(id) => {
+   const res = await deleteRecord('cias', `cias/admin/cia_relations/${id}`)
+   if ([200, 201].includes(res.status)) {
+     res.data.message && GlobalNotificator(res.data.message, 'positive');
+     await getModuleData('cias', `cias/admin/users/forcia?cia_id=${props.cia.id}`, 'usersforcia')
+     await getModuleData('cias', `cias/admin/cia_relations/${props.cia.id}`, 'cia_users');
+     emit('updateData')
+     users.value = modules.cias.cia_users
+     selected_id.value = null
+   } else (
+     GlobalNotificator('Ha ocurrido un error', 'negative')
+   )
+ }
  onMounted(() => {
    getModuleData('cias', `cias/admin/users/forcia?cia_id=${props.cia.id}`, 'usersforcia');
    users.value = props.users;
