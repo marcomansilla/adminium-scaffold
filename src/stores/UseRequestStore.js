@@ -42,7 +42,7 @@ export const useRequestStore = defineStore('requests', {
 	  response = error.response;
 	}
       } catch (error) {
-	response.data = error.response.data;
+	response = error.response.data;
       }
       return response;
     },

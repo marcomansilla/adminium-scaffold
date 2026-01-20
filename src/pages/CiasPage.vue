@@ -41,7 +41,7 @@ q-page.q-pa-md
     q-card(style="width: 700px; max-width: 80vw")
       q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white Productores para {{cia.name}}
       q-card-section
-       cia-users-component(:users="cia_users")
+       cia-users-component(:users="cia_users" :cia="cia" @updateData="updateData")
 </template>
 
 <script setup>
@@ -78,6 +78,7 @@ q-page.q-pa-md
    { name: 'phone', align: 'left',label: 'Telefono', field: 'phone', sortable: false },
    { name: 'email', align: 'left',label: 'E-mail', field: 'email', sortable: false },
    { name: 'contact', align: 'left',label: 'Contacto', field: 'contact', sortable: false },
+   { name: 'user_count', align: 'left',label: 'Productores', field: 'user_count', sortable: false },
    { name: 'users', align: 'center',label: 'Productores', sortable: false },
    { name: 'open', align: 'center',label: 'Ver', sortable: false },
    { name: 'delete', align: 'center',label: 'Eliminar', sortable: false },
@@ -153,9 +154,12 @@ q-page.q-pa-md
  }
  onMounted(() => {
    getAllData('cias', 'cias/admin/cias')
-   cia.value = ciaModel.value
+   console.log('UPDATE!', cia.value)
  })
 
+ const updateData = async () => {
+   await getAllData('cias', 'cias/admin/cias')
+ }
  // Proper component logic
  const showCiaUsers = async (data) => {
     cia.value = JSON.parse(JSON.stringify(data));
