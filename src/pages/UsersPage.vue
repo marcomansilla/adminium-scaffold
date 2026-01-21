@@ -12,6 +12,9 @@ q-page.q-pa-md
     title="Usuarios"
     :columns="columns"
     :rows="users")
+    template(v-slot:body-cell-cias_btn="props")
+      q-td(:props="props")
+        q-btn(icon="business" color="primary" round size="sm" @click="openRelations(props.row)")
     template(v-slot:body-cell-open="props")
       q-td(:props="props")
         q-btn(icon="remove_red_eye" color="primary" round size="sm" @click="openUserDialog(props.row)")
@@ -33,7 +36,12 @@ q-page.q-pa-md
           :extraBtn="{text: 'Cancelar', color:'red', display:true}"
           :actionExtra="cancelForm"
           :actionSubmit="handleForm")
-
+q-dialog(v-model="open_relations" backdrop-filter="blur(4px)")
+    q-card(style="width: 700px; max-width: 80vw")
+      q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white Compañias para {{user.fullname}}
+      q-card-section
+       user-cias-component(:user="user" :cias="cias" @updateData="updateData")
+       q-btn.q-mt-md.full-width(label="Cerrar" icon="close" @click="open_relations=false" color="primary")
 
 </template>
 
@@ -47,12 +55,12 @@ q-page.q-pa-md
  import { userModel, userFormRules, userFormFields } from '../models/user.js';
  import { normalizeDate } from '../composables/dateHandler';
  import FormBuilderComponent from '../components/FormBuilderComponent.vue';
-
+ import UserCiasComponent from '../components/UserCiasComponent.vue';
 
  // Required variables
  const $q = useQuasar();
  const { validate, clearError, Errors, clearAllFormErrors, injectError } = useValidator();
- const { getAllData, deleteRecord, createRecord, updateRecord, modules, onRequest } = useRequests();
+ const { getAllData, deleteRecord, createRecord, updateRecord, modules, onRequest, getModuleData } = useRequests();
  const filter_text = ref('');
  const filter_fields = 'fullname, dni, email, matricula'
  const users = computed(() => modules.users?.data);
@@ -66,10 +74,17 @@ q-page.q-pa-md
    { name: 'matricula', align: 'left',label: 'Matricula', field: 'matricula', sortable: false },
    { name: 'cuit', align: 'left',label: 'CUIT', field: 'cuit', sortable: false },
    { name: 'phone', align: 'left',label: 'Telefono', field: 'phone', sortable: false },
-   { name: 'open', align: 'left',label: 'Ver', sortable: false },
-   { name: 'delete', align: 'left',label: 'Eliminar', sortable: false },
+   { name: 'cias', align: 'center',label: 'CIAS', field: 'cias_count', sortable: false },
+   { name: 'cias_btn', align: 'center',label: '', sortable: false },
+   { name: 'open', align: 'center',label: 'Ver', sortable: false },
+   { name: 'delete', align: 'center',label: 'Eliminar', sortable: false },
  ]
 
+ // Component variables
+ const open_relations = ref(false)
+
+
+ // Methods
  const cancelForm = () => {
    resetUser();
    open_dialog.value = false;
@@ -135,8 +150,19 @@ q-page.q-pa-md
      }
    });
  }
+
+ const updateData = async () => {
+   await getAllData('users', 'users/admin/users')
+ }
+
  const resetUser = () => {
    user.value = JSON.parse(JSON.stringify(userModel.value))
+ }
+
+ const openRelations = async (data) => {
+   user.value = JSON.parse(JSON.stringify(data));
+   await getModuleData('cias', `cias/admin/user_relations?id=${user.value.id}`, 'ciasforuser')
+   open_relations.value = true;
  }
  onMounted(() => {
    getAllData('users', 'users/admin/users')
