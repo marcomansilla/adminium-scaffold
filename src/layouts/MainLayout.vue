@@ -42,6 +42,12 @@ q-layout(view="lHh Lpr lFf")
      link: '/admin/cias'
    },
    {
+     title: 'Eventos',
+     caption: 'Notificaciones',
+     icon: 'psychology',
+     link: '/admin/events'
+   },
+   {
      title: 'Perfil',
      caption: 'Perfil de usuario',
      icon: 'person',
@@ -60,5 +66,7 @@ q-layout(view="lHh Lpr lFf")
    initializeErrors('users')
    initializeModule('cias')
    initializeErrors('cias')
+   initializeModule('events')
+   initializeErrors('events')
  })
 </script>

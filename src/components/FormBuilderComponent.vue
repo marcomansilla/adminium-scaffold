@@ -106,7 +106,15 @@ q-form.q-pa-md
               @update:model-value="() => {clearError(formname, field.name)}")
               div.row.items-center.justify-end
                 q-btn(v-close-popup label="Cerrar" color="primary" flat)
-
+    div.q-mb-lg(v-if="field.type == 'time'")
+      q-input(v-model="formData[field.name]" label="Hora")
+        q-btn(icon="access_time" size="sm" color="primary")
+          q-popup-proxy(@before-show="updateProxy" cover transition-show="scale" transition-hide="scale")
+            q-time(v-model="formData[field.name]")
+              div.row.items-center.justify-end.q-gutter-sm
+                q-btn(label="Cancel" color="primary" flat v-close-popup)
+                q-btn(label="OK" color="primary" flat @click="save" v-close-popup)
+    q-editor(v-if="field.type == 'richtext'" v-model="formData[field.name]")
   slot(name="extras")
   q-space
   .float-right.q-mb-md.q-mt-xl
@@ -210,6 +218,10 @@ q-form.q-pa-md
       if (f.type == 'selectfilter') {
         filters.value[f.name] = f.options;
         filteredValues.value[f.name] = null;
+      }
+
+      if (f.type == 'time') {
+        formData.value[f.name] = new Date().toLocaleTimeString();
       }
     })
   }

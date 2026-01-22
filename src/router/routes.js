@@ -21,6 +21,13 @@ const routes = [
     ]
   },
   {
+    path: '/admin/events',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/EventsPage.vue') }
+    ]
+  },
+  {
     path: '/admin/cias',
     component: () => import('layouts/MainLayout.vue'),
     children: [
