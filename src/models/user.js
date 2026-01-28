@@ -22,12 +22,6 @@ export const userModel = ref({
 export const userFormRules = {
   fullname: [required, minLength(6)],
   email: [required, email],
-  matricula: [required],
-  address: [required],
-  dni: [required],
-  cuit: [required],
-  phone: [required],
-  birthday: [required],
 };
 
 export const userFormFields = [

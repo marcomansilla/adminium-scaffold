@@ -34,6 +34,7 @@ q-page.q-pa-md
           formname="cias"
           :rules="ciaFormRules"
           :extraBtn="{text: 'Cancelar', color:'red', display:true}"
+          :submitBtn="{text: 'Guardar', color:'primary'}"
           :actionExtra="cancelForm"
           :actionSubmit="handleForm")
 

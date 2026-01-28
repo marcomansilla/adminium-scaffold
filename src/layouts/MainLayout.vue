@@ -30,8 +30,8 @@ q-layout(view="lHh Lpr lFf")
      link: '/'
    },
    {
-     title: 'Usuarios',
-     caption: 'Usuarios del sistema',
+     title: 'Productores',
+     caption: 'Productores registrados',
      icon: 'people',
      link: '/admin/users'
    },

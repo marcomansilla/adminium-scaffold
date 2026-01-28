@@ -32,23 +32,35 @@ q-page.q-pa-md
           v-model="event"
           formname="events"
           :rules="eventFormRules"
-          :extraBtn="{text: 'Cancelar', color:'red', display:true}"
+          :extraBtn="{text: 'Cancelar', color:'red', display:true, icon:'close'}"
+          :submitBtn="{text: 'Enviar', color:'primary', icon:'send'}"
           :actionExtra="cancelForm"
           :actionSubmit="handleForm")
       q-card-section.full-width.row.items-center.q-pb-none.text-h7.bg-primary.text-white
         template(v-if="cia_users.count > 0")
-          .col-4
+          .col-2
             p Productores: {{cia_users.count}}
-          .col-4
-            p Productores con E-mail: {{cia_users.with_email}}
-          .col-4
-            p Productores con Telefono: {{cia_users.with_phone}}
+          .col-5
+            q-btn.q-mb-md(:label="`Productores con E-mail: ${cia_users.with_email}`" @click="guest_dialog=true")
+          .col-5
+            p Productores a notificar {{cia_users.email_receptors.filter(c => c.notify).length}}
         template(v-else-if="cia_users.count == 0")
           .col-12
             p No hay productores para la compañia
         template(v-else)
           .col-12
             p Seleccione una compañia
+
+  q-dialog(v-model="guest_dialog" backdrop-filter="blur(4px)")
+    q-card(style="width: 700px; max-width: 80vw")
+      q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white Productores notificados {{cia_users.email_receptors.filter(c => c.notify).length}}
+      q-card-section
+        table
+          tr(v-for="item, index in cia_users.email_receptors.filter(u => u.notify)")
+            td {{item.name}}
+            td
+              q-checkbox(v-model="cia_users.email_receptors[index].notify")
+        q-btn.full-width.q-ma-md(icon="close" label="Cerrar" color="primary" @click="guest_dialog=false")
 </template>
 
 <script setup>
@@ -70,6 +82,7 @@ q-page.q-pa-md
  const events = computed(() => modules.events?.data);
  const pagination = computed(() => modules.events?.pagination);
  const open_dialog = ref(false)
+ const guest_dialog = ref(false)
  const event = ref({});
 
 

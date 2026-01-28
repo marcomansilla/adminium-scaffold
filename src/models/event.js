@@ -13,35 +13,28 @@ import {
 const store = useRequestStore();
 
 export const eventModel = ref({
+  subject: '',
   cia_id: '',
-  date:'',
-  time: '',
   message:''
 });
 
 export const eventFormRules = {
+  subject: [required],
   cia_id: [required],
-  date: [required],
-  time: [required],
   mesasage: [required, minLength(20)],
 };
 
 export const eventFormFields = computed(() => [
   {
+    name: 'subject',
+    label: 'Asunto/Titulo',
+    type: 'text'
+  },
+  {
     name: 'cia_id',
     label: 'Compañia',
     type: 'select',
     options: store.modules.events?.cias || []
-  },
-  {
-    name: 'date',
-    label: 'Fecha',
-    type: 'date',
-  },
-  {
-    name: 'time',
-    label: 'Hora',
-    type: 'time',
   },
   {
     name: 'message',

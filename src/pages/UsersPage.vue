@@ -1,6 +1,6 @@
 <template lang="pug">
 q-page.q-pa-md
-  h3 Usuarios
+  h3 Productores
   q-input.full-width(label="Filtrar" v-model="filter_text" )
     q-icon(name="filter_alt" size="lg")
   br
@@ -9,7 +9,7 @@ q-page.q-pa-md
     v-model:pagination="pagination"
     :filter="filter_text"
     @request="(props) => onRequest(props, 'users', 'users/admin/users', filter_text, filter_fields)"
-    title="Usuarios"
+    title="Productores"
     :columns="columns"
     :rows="users")
     template(v-slot:body-cell-cias_btn="props")
@@ -34,6 +34,7 @@ q-page.q-pa-md
           formname="users"
           :rules="userFormRules"
           :extraBtn="{text: 'Cancelar', color:'red', display:true}"
+          :submitBtn="{text: 'Guardar'}"
           :actionExtra="cancelForm"
           :actionSubmit="handleForm")
 q-dialog(v-model="open_relations" backdrop-filter="blur(4px)")
