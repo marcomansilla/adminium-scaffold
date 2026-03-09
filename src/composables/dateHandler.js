@@ -71,6 +71,7 @@ export const xignus_locale =  {
 
 export const formatUTC = (date, useUTC = true) =>  {
   const d = new Date(date);
+  var result = '';
 
   if (useUTC) {
     // Use UTC methods to avoid timezone shifts
@@ -81,7 +82,8 @@ export const formatUTC = (date, useUTC = true) =>  {
     const minutes = String(d.getUTCMinutes()).padStart(2, '0');
     const seconds = String(d.getUTCSeconds()).padStart(2, '0');
 
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    result = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    console.log('utc', result);
   } else {
     // Use local timezone
     const year = d.getFullYear();
@@ -91,6 +93,8 @@ export const formatUTC = (date, useUTC = true) =>  {
     const minutes = String(d.getMinutes()).padStart(2, '0');
     const seconds = String(d.getSeconds()).padStart(2, '0');
 
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    result = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    console.log('noutc', result);
   }
+  return result;
 };

@@ -12,6 +12,12 @@ q-page.q-pa-md
     title="Events"
     :columns="columns"
     :rows="events")
+    template(v-slot:body-cell-date_sent="props")
+      q-td(:props="props")
+        p {{props.row.date_sent && new Date(props.row.date_sent).toLocaleString('en-GB')}}
+    template(v-slot:body-cell-cia="props")
+      q-td(:props="props")
+        p {{modules.events?.cias.filter(c => c.value == props.row.cia_id)[0].label}}
     template(v-slot:body-cell-users="props")
       q-td(:props="props")
         q-btn(icon="groups" color="primary" round size="sm" @click="showEventUsers(props.row)")
@@ -22,7 +28,7 @@ q-page.q-pa-md
       q-td(:props="props")
         q-btn(icon="delete" color="red" round size="sm" @click="removeEvent(props.row.id)")
   q-btn.add-btn(icon="add" round size="xl" @click="openEventDialog()")
-
+  p {{events[0]}}
   q-dialog(v-model="open_dialog" backdrop-filter="blur(4px)")
     q-card(style="width: 700px; max-width: 80vw")
       q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white {{event.id ? 'Actualizar datos' : 'Nuevo evento'}}
@@ -100,9 +106,10 @@ q-page.q-pa-md
 
  // Table
  const columns = [
-   { name: 'cia_name', align: 'left', label: 'Compañia', field: 'cia_name', sortable: true },
-   { name: 'date', align: 'left',label: 'Fecha', field: 'date', sortable: false },
-   { name: 'user_count', align: 'left',label: 'Productores', field: 'user_count', sortable: false },
+   { name: 'cia', align: 'left', label: 'Compañia', sortable: true },
+   { name: 'subject', align: 'left', label: 'Asunto', field: 'subject', sortable: true },
+   { name: 'date_sent', align: 'left',label: 'Fecha de envio', sortable: false },
+   { name: 'recipients_count', align: 'left',label: 'Productores', field: 'recipients_count', sortable: false },
    { name: 'open', align: 'center',label: 'Ver', sortable: false },
    { name: 'delete', align: 'center',label: 'Eliminar', sortable: false },
  ]
@@ -113,15 +120,13 @@ q-page.q-pa-md
    open_dialog.value = false;
  }
  const openEventDialog = (data=null) => {
-   console.log(event.value)
    if (data) {
      event.value = data;
      open_dialog.value = true;
    } else {
      const today = new Date();
      event_date.value = today.toLocaleString('en-GB');
-     event.value.date_sent = date.formatDate(today, 'YYYY-MM-DD HH:mm:ss');
-     console.log(event.value.date_sent)
+     event.value.date_sent = formatUTC(today);
      resetEvent();
      open_dialog.value = false;
    }
