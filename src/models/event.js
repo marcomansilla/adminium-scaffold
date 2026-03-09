@@ -10,18 +10,22 @@ import {
   requiredIf,
 } from '../composables/rules.js';
 
+var today = new Date();
+
 const store = useRequestStore();
 
 export const eventModel = ref({
   subject: '',
   cia_id: '',
-  message:''
+  message:'',
+  date_sent: today,
+  recipients_count: 0
 });
 
 export const eventFormRules = {
   subject: [required],
   cia_id: [required],
-  mesasage: [required, minLength(20)],
+  message: [required, minLength(20)],
 };
 
 export const eventFormFields = computed(() => [

@@ -40,6 +40,8 @@ q-form.q-pa-md
       :hint="field.hint"
       :placeholder="field.placeholder"
       :icon="field.icon || ''"
+      emit-value
+      map-options
       :options="field.options"
       :label="field.label || field.name"
       :error="Errors[formname].errors_data.fields.includes(field.name)"
@@ -118,9 +120,10 @@ q-form.q-pa-md
   slot(name="extras")
   q-space
   .float-right.q-mb-md.q-mt-xl
-    q-btn(@click="handleSubmit()" :label="props.submitBtn.text" color="primary" :size="props.submitBtn.size || 'md'" :icon="props.submitBtn.icon || 'save'")
+    q-btn(@click="handleSubmit()" :label="props.submitBtn.text"  color="primary" :size="props.submitBtn.size || 'md'" :icon="props.submitBtn.icon || 'save'")
     span &nbsp
-    q-btn(:label="props.extraBtn.text" :color="props.extraBtn.color" v-if="props.extraBtn.display" @click="actionExtra()" :size="props.submitBtn.size || 'md'" :icon="props.extraBtn.icon")
+    q-btn(:label="props.extraBtn.text" :color="props.extraBtn.color" v-if="props.extraBtn.display" @click="actionExtra()" :size="props.submitBtn.size || 'md'" :icon="props.submitBtn.icon || 'close'")
+
     q-space
 </template>
 
@@ -147,8 +150,7 @@ q-form.q-pa-md
         return {
           text: 'Cancelar',
           color: 'red',
-          display: false,
-          icon: 'close'
+          display: false
         }
       }
     },

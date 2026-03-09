@@ -36,6 +36,8 @@ q-page.q-pa-md
           :submitBtn="{text: 'Enviar', color:'primary', icon:'send'}"
           :actionExtra="cancelForm"
           :actionSubmit="handleForm")
+          template(v-slot:extras)
+            q-input(label="Fecha de creacion" v-model="event_date" disable)
       q-card-section.full-width.row.items-center.q-pb-none.text-h7.bg-primary.text-white
         template(v-if="cia_users.count > 0")
           .col-2
@@ -64,13 +66,13 @@ q-page.q-pa-md
 </template>
 
 <script setup>
- import { useQuasar } from 'quasar';
+ import { useQuasar, date } from 'quasar';
  import { ref, onMounted, computed, onBeforeMount, watch } from 'vue';
  import { GlobalNotificator } from '../composables/notificator.js';
  import { useRequests } from '../composables/requestor';
  import { useValidator } from '../composables/validator.js';
  import { eventModel, eventFormRules, eventFormFields } from '../models/event.js';
- import { normalizeDate } from '../composables/dateHandler';
+ import { normalizeDate, formatUTC } from '../composables/dateHandler';
  import FormBuilderComponent from '../components/FormBuilderComponent.vue';
 
  // Required variables
@@ -84,7 +86,7 @@ q-page.q-pa-md
  const open_dialog = ref(false)
  const guest_dialog = ref(false)
  const event = ref({});
-
+ const event_date = ref('');
 
  // Component variables
  const cia_users = computed(() => {
@@ -111,10 +113,15 @@ q-page.q-pa-md
    open_dialog.value = false;
  }
  const openEventDialog = (data=null) => {
+   console.log(event.value)
    if (data) {
      event.value = data;
      open_dialog.value = true;
    } else {
+     const today = new Date();
+     event_date.value = today.toLocaleString('en-GB');
+     event.value.date_sent = date.formatDate(today, 'YYYY-MM-DD HH:mm:ss');
+     console.log(event.value.date_sent)
      resetEvent();
      open_dialog.value = false;
    }
@@ -185,9 +192,10 @@ q-page.q-pa-md
    await getAllData('events', 'events/admin/events')
  }
 
- watch(() => event.value.cia_id, (newCiaId, oldCiaId) => {
-   if (newCiaId.value) {
-     getModuleData('events', `events/admin/cia_users/${newCiaId.value}`, 'cia_users');
+ watch(() => event.value.cia_id, async (newCiaId, oldCiaIdb) => {
+   if (newCiaId) {
+     await getModuleData('events', `events/admin/cia_users/${newCiaId}`, 'cia_users');
+     event.value.recipients_count = modules.events?.cia_users.with_email;
    }
  });
 </script>
