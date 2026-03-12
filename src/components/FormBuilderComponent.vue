@@ -92,6 +92,26 @@ q-form.q-pa-md
       @update:model-value="() => {clearError(formname, field.name)}")
       template(v-slot:prepend)
         q-icon(:name="field.icon || 'cloud_upload'")
+    q-file(
+      v-else-if="field.type === 'files'"
+      :hint="field.hint"
+      color="teal"
+      filled
+      multiple
+      clearable
+      v-model="formData[field.name]"
+      :multiple="field.multiple || false"
+      :use-chips="field.use_chips || false"
+      :append="field.append || false"
+      :label="field.label"
+      :accept="field.extensions || '.jpg, .jpeg, .png, */image'"
+      :max-file-size="field.max_file_size *1000000 || 1000000"
+      @rejected="(rejectedEntries) => { onRejected(rejectedEntries, field.name)}"
+      :error="Errors[formname].errors_data.fields.includes(field.name)"
+      :error-message="Errors[formname].errors[field.name]"
+      @update:model-value="() => {clearError(formname, field.name)}")
+      template(v-slot:prepend)
+        q-icon(:name="field.icon || 'cloud_upload'")
     q-input(
       v-else-if="field.type === 'date'"
       filled

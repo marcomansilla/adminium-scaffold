@@ -10,15 +10,13 @@ import {
   requiredIf,
 } from '../composables/rules.js';
 
-var today = new Date();
-
 const store = useRequestStore();
 
 export const eventModel = ref({
   subject: '',
   cia_id: '',
   message:'',
-  date_sent: today,
+  date_sent: '',
   recipients_count: 0
 });
 

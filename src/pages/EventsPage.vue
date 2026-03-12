@@ -28,7 +28,7 @@ q-page.q-pa-md
       q-td(:props="props")
         q-btn(icon="delete" color="red" round size="sm" @click="removeEvent(props.row.id)")
   q-btn.add-btn(icon="add" round size="xl" @click="openEventDialog()")
-  p {{events[0]}}
+
   q-dialog(v-model="open_dialog" backdrop-filter="blur(4px)")
     q-card(style="width: 700px; max-width: 80vw")
       q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white {{event.id ? 'Actualizar datos' : 'Nuevo evento'}}
@@ -44,6 +44,22 @@ q-page.q-pa-md
           :actionSubmit="handleForm")
           template(v-slot:extras)
             q-input(label="Fecha de creacion" v-model="event_date" disable)
+            q-file(
+              hint="Seleccione los archivos"
+              color="teal"
+              filled
+              multiple
+              clearable
+              use-chips
+              v-model="event_files"
+              :use-chips
+              :append
+              label="Archivos adjuntos"
+              accept="'.jpg, .jpeg, .png, */image, .pdf'"
+              max-file-size="10485760")
+              template(v-slot:prepend)
+                q-icon(name="cloud_upload")
+            p Archivos: {{event_files.length}}
       q-card-section.full-width.row.items-center.q-pb-none.text-h7.bg-primary.text-white
         template(v-if="cia_users.count > 0")
           .col-2
@@ -79,6 +95,7 @@ q-page.q-pa-md
  import { useValidator } from '../composables/validator.js';
  import { eventModel, eventFormRules, eventFormFields } from '../models/event.js';
  import { normalizeDate, formatUTC } from '../composables/dateHandler';
+ import axios from 'axios';
  import FormBuilderComponent from '../components/FormBuilderComponent.vue';
 
  // Required variables
@@ -91,9 +108,11 @@ q-page.q-pa-md
  const pagination = computed(() => modules.events?.pagination);
  const open_dialog = ref(false)
  const guest_dialog = ref(false)
+ const uploading = ref(false)
  const event = ref({});
  const event_date = ref('');
-
+ const event_files = ref([]);
+ const event_id = ref(null);
  // Component variables
  const cia_users = computed(() => {
    if (modules.events?.cia_users) {
@@ -124,10 +143,10 @@ q-page.q-pa-md
      event.value = data;
      open_dialog.value = true;
    } else {
+     resetEvent();
      const today = new Date();
      event_date.value = today.toLocaleString('en-GB');
-     event.value.date_sent = formatUTC(today);
-     resetEvent();
+     event.value.date_sent = today;
      open_dialog.value = false;
    }
    open_dialog.value = true
@@ -154,7 +173,9 @@ q-page.q-pa-md
        if ([200, 201].includes(res.status)) {
          res.data.message && GlobalNotificator(res.data.message, 'positive');
          resetEvent();
+         event_id.value = res.data.id;
          open_dialog.value = false;
+         uploadFiles();
        } else {
          GlobalNotificator('Por favor revise los valores', 'negative');
          Object.keys(res.errors).forEach(e => {
@@ -185,6 +206,63 @@ q-page.q-pa-md
  const resetEvent = () => {
    event.value = JSON.parse(JSON.stringify(eventModel.value))
  }
+
+ // Upload files one by one
+const uploadFiles = async () => {
+  if (!event_files.value.length) return
+  uploading.value = true
+  const uploaded = []
+  const failed = []
+
+  for (let i = 0; i < event_files.value.length; i++) {
+    const file = event_files.value[i]
+    const formData = new FormData()
+    formData.append('file', file) // Single file per request
+
+    try {
+      GlobalNotificator(`Uploading ${i + 1}/${event_files.value.length}: ${file.name}`, 'positive')
+
+      await axios.post(
+        `${import.meta.env.VITE_BASE_API}/uploads/upload/events/${event_id.value}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      )
+
+      uploaded.push(file.name)
+
+    } catch (error) {
+      console.error(`Failed to upload ${file.name}:`, error)
+      failed.push(file.name)
+    }
+  }
+
+  // Show results
+  if (uploaded.length) {
+    $q.notify({
+      type: 'positive',
+      message: `Uploaded ${uploaded.length} file(s) successfully`
+    })
+  }
+
+  if (failed.length) {
+    $q.notify({
+      type: 'negative',
+      message: `Failed to upload: ${failed.join(', ')}`
+    })
+  }
+
+  // Clear files if all uploaded successfully
+  if (failed.length === 0) {
+    event_files.value = []
+  }
+
+  uploading.value = false
+}
+
  onMounted(() => {
    getAllData('events', 'events/admin/events')
  })

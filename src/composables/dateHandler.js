@@ -83,7 +83,6 @@ export const formatUTC = (date, useUTC = true) =>  {
     const seconds = String(d.getUTCSeconds()).padStart(2, '0');
 
     result = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    console.log('utc', result);
   } else {
     // Use local timezone
     const year = d.getFullYear();
@@ -94,7 +93,6 @@ export const formatUTC = (date, useUTC = true) =>  {
     const seconds = String(d.getSeconds()).padStart(2, '0');
 
     result = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    console.log('noutc', result);
   }
   return result;
 };
