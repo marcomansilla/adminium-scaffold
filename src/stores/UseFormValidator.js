@@ -17,7 +17,7 @@ export const useFormValidatorStore = defineStore('formValidator', {
             count: 0,
             fields: [],
           }
-        }
+        };
       },
       checkFormErrors(formname, fields, rules) {
         Object.keys(rules).forEach((field) => {
@@ -36,6 +36,7 @@ export const useFormValidatorStore = defineStore('formValidator', {
         });
       },
       clearFormError(formname, field) {
+        console.log(formname, field)
         delete this.form_errors[formname].errors[field];
         let index = this.form_errors[formname].errors_data.fields.findIndex((el) => el == field);
         if (index >= 0) {

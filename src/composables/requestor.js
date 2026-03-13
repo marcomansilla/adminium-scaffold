@@ -34,6 +34,10 @@ export function useRequests() {
     getAllData(module, uri, props.pagination);
   };
 
+  const uploadFile = (uri, formdata) => {
+    return store.uploadFile(uri, formdata);
+  };
+
   return {
     initializeModule,
     getAllData,
@@ -42,6 +46,7 @@ export function useRequests() {
     updateRecord,
     deleteRecord,
     onRequest,
+    uploadFile,
     modules,
   };
 }

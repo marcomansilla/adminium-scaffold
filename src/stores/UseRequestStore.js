@@ -15,6 +15,7 @@ export const useRequestStore = defineStore('requests', {
         pagination: {},
       };
     },
+
     async getAllData(module, uri, payload = null) {
       let params = {};
       if (payload) {
@@ -32,6 +33,7 @@ export const useRequestStore = defineStore('requests', {
           console.log(err);
         });
     },
+
     async createRecord(module, uri, payload) {
       let response = {};
       try {
@@ -68,6 +70,7 @@ export const useRequestStore = defineStore('requests', {
       }
       return response;
     },
+
     async deleteRecord(module, uri) {
       try {
         const res = await axios.delete(
@@ -84,6 +87,7 @@ export const useRequestStore = defineStore('requests', {
         };
       }
     },
+
     async getModuleData(module, uri, field) {
       let response = {};
       await axios
@@ -98,5 +102,28 @@ export const useRequestStore = defineStore('requests', {
         });
       return response;
     },
+
+    async uploadFile(uri, formdata) {
+      let response = {};
+      try {
+        const res = await axios.post(
+          `${this.BASE_URL}/${uri}`,
+          formdata,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+        );
+        console.log(res);
+        if ([200, 201, 204].includes(res.status)) {
+          response = res;
+        } else {
+          response = error.response;
+        }
+      } catch (error) {
+        response = error.response.data;
+      }
+    }
   },
 });

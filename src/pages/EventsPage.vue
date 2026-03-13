@@ -59,7 +59,7 @@ q-page.q-pa-md
               max-file-size="10485760")
               template(v-slot:prepend)
                 q-icon(name="cloud_upload")
-            p Archivos: {{event_files.length}}
+            p(v-if="event_files.length") Archivos: {{event_files.length}}
       q-card-section.full-width.row.items-center.q-pb-none.text-h7.bg-primary.text-white
         template(v-if="cia_users.count > 0")
           .col-2
@@ -100,8 +100,22 @@ q-page.q-pa-md
 
  // Required variables
  const $q = useQuasar();
- const { validate, clearError, Errors, clearAllFormErrors, injectError } = useValidator();
- const { getAllData, deleteRecord, createRecord, updateRecord, modules, onRequest, getModuleData } = useRequests();
+ const {
+   validate,
+   clearError,
+   Errors,
+   clearAllFormErrors,
+   injectError } = useValidator();
+ const {
+   getAllData,
+   deleteRecord,
+   createRecord,
+   updateRecord,
+   modules,
+   onRequest,
+   getModuleData,
+   uploadFile } = useRequests();
+
  const filter_text = ref('');
  const filter_fields = 'cia_name, date'
  const events = computed(() => modules.events?.data);
@@ -221,16 +235,7 @@ const uploadFiles = async () => {
 
     try {
       GlobalNotificator(`Uploading ${i + 1}/${event_files.value.length}: ${file.name}`, 'positive')
-
-      await axios.post(
-        `${import.meta.env.VITE_BASE_API}/uploads/upload/events/${event_id.value}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      )
+      uploadFile(`/uploads/upload/events/${event_id.value}`, formData)
 
       uploaded.push(file.name)
 

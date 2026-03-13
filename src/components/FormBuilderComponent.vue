@@ -136,7 +136,19 @@ q-form.q-pa-md
               div.row.items-center.justify-end.q-gutter-sm
                 q-btn(label="Cancel" color="primary" flat v-close-popup)
                 q-btn(label="OK" color="primary" flat @click="save" v-close-popup)
-    q-editor(v-if="field.type == 'richtext'" v-model="formData[field.name]")
+
+    div(v-if="field.type == 'richtext'" class="q-mb-md")
+      q-field(
+        :label="field.label || field.name"
+        :hint="field.hint"
+        :error="Errors[formname].errors_data.fields.includes(field.name)"
+        :error-message="Errors[formname].errors[field.name]"
+        class="full-width")
+        q-editor.full-width.q-mt-lg(
+          v-model="formData[field.name]"
+          :placeholder="field.placeholder"
+          @update:model-value="clearError(formname, field.name)"
+          min-height="180px")
   slot(name="extras")
   q-space
   .float-right.q-mb-md.q-mt-xl
