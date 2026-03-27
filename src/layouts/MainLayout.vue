@@ -9,17 +9,29 @@ q-layout(view="lHh Lpr lFf")
     q-list
       q-item-label(header="")  Menu principal
       essential-link(v-for="link in linksList" :key="link.title" v-bind="link")
+      q-item.q-mt-xl(clickable="" tag="a" @click="closeSession")
+        q-item-section(avatar="")
+          q-icon(name="logout")
+        q-item-section
+          q-item-label Salir
+          q-item-label(caption="")
+            span.text-gray1 Cerrar sesion
   q-page-container
     router-view
 </template>
 
 <script setup>
- import { ref, onBeforeMount } from 'vue'
- import EssentialLink from 'components/EssentialLink.vue'
- import { useValidator } from '../composables/validator'
- import { useRequests } from '../composables/requestor'
+ import { ref, onBeforeMount, onMounted } from 'vue';
+ import { useQuasar } from 'quasar';
+ import EssentialLink from 'components/EssentialLink.vue';
+ import { useValidator } from '../composables/validator';
+ import { useRequests } from '../composables/requestor';
+ import { useAuth } from '../composables/auth';
 
- const { initializeErrors } = useValidator()
+
+ const $q = useQuasar();
+ const { checkAuth, logout } = useAuth();
+ const { initializeErrors } = useValidator();
  const { initializeModule } = useRequests()
 
  const linksList = [
@@ -61,6 +73,17 @@ q-layout(view="lHh Lpr lFf")
    leftDrawerOpen.value = !leftDrawerOpen.value
  }
 
+ const closeSession = () => {
+   $q.dialog({
+     title: 'Confirme',
+     message: 'Seguro que desea terminar la sesion?',
+     cancel: true,
+     persistent: true,
+   }).onOk(async () => {
+     logout();
+   });
+ }
+
  onBeforeMount(() => {
    initializeModule('users')
    initializeErrors('users')
@@ -68,5 +91,9 @@ q-layout(view="lHh Lpr lFf")
    initializeErrors('cias')
    initializeModule('events')
    initializeErrors('events')
+ })
+
+ onMounted(()=> {
+   checkAuth('/', '/login')
  })
 </script>

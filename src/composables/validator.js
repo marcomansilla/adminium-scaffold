@@ -18,12 +18,13 @@ export function useValidator() {
   };
 
   const injectError = (formname, field, text) => {
-    store.injectError(formname, field, text)
-  }
+    store.injectError(formname, field, text);
+  };
 
   const clearAllFormErrors = (formname) => {
     store.clearAllFormErrors(formname);
-  }
+  };
+
   return {
     Errors,
     validate,

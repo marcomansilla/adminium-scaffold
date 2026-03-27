@@ -115,7 +115,6 @@ export const useRequestStore = defineStore('requests', {
             }
           }
         );
-        console.log(res);
         if ([200, 201, 204].includes(res.status)) {
           response = res;
         } else {
