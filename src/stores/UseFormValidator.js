@@ -36,7 +36,6 @@ export const useFormValidatorStore = defineStore('formValidator', {
         });
       },
       clearFormError(formname, field) {
-        console.log(formname, field)
         delete this.form_errors[formname].errors[field];
         let index = this.form_errors[formname].errors_data.fields.findIndex((el) => el == field);
         if (index >= 0) {
@@ -54,7 +53,7 @@ export const useFormValidatorStore = defineStore('formValidator', {
         this.form_errors[formname].errors_data.count = this.form_errors[formname].errors_data.fields.length;
       },
       clearAllFormErrors(formname) {
-        this.initializeFormValidator(formname)
+        this.initializeFormValidator(formname);
       }
     },
 });

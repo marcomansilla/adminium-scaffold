@@ -5,13 +5,13 @@
           h1.text-h3.center.text-white.text-bold Ingreso
         .col-12
           form
-            q-input(label="CUIT" placeholder="11-11111111-1")
+            q-input(label="E-mail" placeholder="email@host.com" v-model="credentials.email")
               template(v-slot:prepend)
                 q-icon(name="person")
-            q-input(label="Contraseña" type="password")
+            q-input(label="Contraseña" type="password" v-model="credentials.password")
               template(v-slot:prepend)
                 q-icon(name="key")
-            q-btn.q-mt-xl.full-width(icon="login" size="lg" color="primary" tag="a" to="/") &nbsp&nbsp Ingresar
+            q-btn.q-mt-xl.full-width(icon="login" size="lg" color="primary" @click="login") &nbsp&nbsp Ingresar
             .row
               .col-6
               .col-6.q-pt-lg(style="text-align: right")
@@ -19,7 +19,27 @@
 </template>
 
 <script setup>
- //
+ import { ref } from 'vue';
+ import { useRouter } from 'vue-router';
+ import { useAuth } from '../composables/auth.js';
+ import { GlobalNotificator } from '../composables/notificator.js';
+
+ const router = useRouter();
+ const { loginUser } = useAuth();
+ const credentials = ref({
+   email: '',
+   password:''
+ })
+
+ const login = async () => {
+   const res = await loginUser('auth/login', credentials.value);
+   if (res.status == 200) {
+     console.log(res, 'skdnskdnsdknsd')
+     GlobalNotificator('Sesion iniciada', 'positive');
+     router.push('/')
+   }
+   console.log(res)
+ }
 </script>
 
 <style lang="scss">
