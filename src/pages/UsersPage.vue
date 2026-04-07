@@ -37,13 +37,12 @@ q-page.q-pa-md
           :submitBtn="{text: 'Guardar'}"
           :actionExtra="cancelForm"
           :actionSubmit="handleForm")
-q-dialog(v-model="open_relations" backdrop-filter="blur(4px)")
+  q-dialog(v-model="open_relations" backdrop-filter="blur(4px)")
     q-card(style="width: 700px; max-width: 80vw")
       q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white Compañias para {{user.fullname}}
       q-card-section
        user-cias-component(:user="user" :cias="cias" @updateData="updateData")
        q-btn.q-mt-md.full-width(label="Cerrar" icon="close" @click="open_relations=false" color="primary")
-
 </template>
 
 <script setup>
@@ -132,7 +131,7 @@ q-dialog(v-model="open_relations" backdrop-filter="blur(4px)")
        }
      }
    }
-   getAllData('users', '/users/admin/users', pagination.value)
+   getAllData('users', '/users/admin/users', pagination.value, {}, true)
  }
 
  const removeUser = (id) => {
@@ -145,7 +144,7 @@ q-dialog(v-model="open_relations" backdrop-filter="blur(4px)")
      const res = await deleteRecord('users', `users/admin/user/${id}`)
      if (res.status == 200) {
        res.data.message && GlobalNotificator(res.data.message, 'positive');
-       getAllData('users', 'users/admin/users', pagination.value)
+       getAllData('users', 'users/admin/users', pagination.value, {}, true)
      } else {
        res.data.message && GlobalNotificator(res.data.message, 'negative');
      }
@@ -153,7 +152,7 @@ q-dialog(v-model="open_relations" backdrop-filter="blur(4px)")
  }
 
  const updateData = async () => {
-   await getAllData('users', 'users/admin/users')
+   await getAllData('users', 'users/admin/users', {}, true)
  }
 
  const resetUser = () => {
@@ -166,7 +165,7 @@ q-dialog(v-model="open_relations" backdrop-filter="blur(4px)")
    open_relations.value = true;
  }
  onMounted(() => {
-   getAllData('users', 'users/admin/users')
+   getAllData('users', 'users/admin/users', {}, true)
    user.value = userModel.value
  })
 </script>

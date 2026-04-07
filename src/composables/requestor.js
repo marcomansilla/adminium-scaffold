@@ -1,6 +1,8 @@
 import { useRequestStore } from '../stores/UseRequestStore.js';
+import { useAuthStore } from '../stores/UseAuthStore.js';
 
 export function useRequests() {
+  const authStore = useAuthStore();
   const store = useRequestStore();
   const modules = store.modules;
 
@@ -8,8 +10,12 @@ export function useRequests() {
     store.initializeModule(name);
   };
 
-  const getAllData = (module, uri, payload = null) => {
-    return store.getAllData(module, uri, payload);
+  const getAllData = (module, uri, payload=null, secure=false) => {
+    var customHeaders = {};
+    if (secure) {
+      customHeaders = authStore.getHeaders;
+    }
+    return store.getAllData(module, uri, payload, secure, customHeaders);
   };
 
   const createRecord = (module, uri, payload) => {

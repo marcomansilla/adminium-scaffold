@@ -16,9 +16,10 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     getHeaders: (state) => {
-      return {headers: {
-        Authorization: `Bearer ${state.token}`
-      }};
+      return {
+        'Authorization': `Bearer ${state.token}`,
+        'Content-Type': 'application/json'
+      };
     }
 
   },
@@ -55,16 +56,15 @@ export const useAuthStore = defineStore('auth', {
         this.isLoggedIn = true;
         this.token = window.localStorage.getItem('token');
         this.profile = JSON.parse(window.localStorage.getItem('profile'));
-        this.router.push(success);
       } else {
         this.router.push(fail);
         GlobalNotificator('Ingrese sus credenciales', 'positive');
       }
     },
     Logout() {
+      GlobalNotificator('Se ha cerrado la sesion.', 'positive');
       window.localStorage.clear();
       this.router.push('/login');
-      GlobalNotificator('Se ha cerrado la sesion.', 'positive');
     }
   },
 });

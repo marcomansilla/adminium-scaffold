@@ -91,9 +91,9 @@ q-layout(view="lHh Lpr lFf")
    initializeErrors('cias')
    initializeModule('events')
    initializeErrors('events')
+   checkAuth('/', '/login')
  })
 
  onMounted(()=> {
-   checkAuth('/', '/login')
  })
 </script>

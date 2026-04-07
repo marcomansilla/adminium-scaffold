@@ -1,10 +1,14 @@
+/Users/mac/work/adminium/sistema/scaffold/src/stores/UseAuthStore.js
+/Users/mac/work/adminium/sistema/scaffold/src/stores/UseRequestStore.js
+/Users/mac/work/adminium/sistema/scaffold/src/pages/UsersPage.vue
+/Users/mac/work/adminium/sistema/scaffold/src/composables/interceptor.js
 /Users/mac/work/adminium/sistema/scaffold/src/layouts/MainLayout.vue
+/Users/mac/work/adminium/sistema/scaffold/src/composables/requestor.js
+/Users/mac/work/adminium/sistema/scaffold/src/composables/auth.js
+/Users/mac/work/adminium/sistema/scaffold/src/pages/LoginPage.vue
 /Users/mac/work/adminium/sistema/scaffold/src/components/EssentialLink.vue
 /Users/mac/work/adminium/sistema/scaffold/src/pages/EventsPage.vue
 /Users/mac/work/adminium/sistema/scaffold/src/models/event.js
-/Users/mac/work/adminium/sistema/scaffold/src/stores/UseRequestStore.js
-/Users/mac/work/adminium/sistema/scaffold/src/composables/requestor.js
 /Users/mac/work/adminium/sistema/scaffold/quasar.config.js
 /Users/mac/work/adminium/sistema/scaffold/src/composables/dateHandler.js
-/Users/mac/work/adminium/sistema/scaffold/src/pages/UsersPage.vue
 /Users/mac/work/adminium/sistema/scaffold/src/pages/IframePage.vue
