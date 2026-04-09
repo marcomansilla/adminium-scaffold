@@ -54,6 +54,12 @@ q-layout(view="lHh Lpr lFf")
      link: '/admin/cias'
    },
    {
+     title: 'Cotizador',
+     caption: 'Multi cotizador',
+     icon: 'request_quote',
+     link: '/admin/cotizador'
+   },
+   {
      title: 'Eventos',
      caption: 'Notificaciones',
      icon: 'psychology',

@@ -65,6 +65,9 @@ export const useAuthStore = defineStore('auth', {
       GlobalNotificator('Se ha cerrado la sesion.', 'positive');
       window.localStorage.clear();
       this.router.push('/login');
+    },
+    GoogleLogin() {
+      window.location.href = `${this.BASE_URL}/auth/google/login`;
     }
   },
 });

@@ -14,10 +14,14 @@ export function useAuth() {
   const logout = () => {
     return store.Logout();
   };
+  const googleLogin = () => {
+    return store.GoogleLogin();
+  };
 
   return {
     loginUser,
     checkAuth,
-    logout
+    logout,
+    googleLogin
   };
 }

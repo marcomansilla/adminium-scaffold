@@ -41,6 +41,21 @@ const routes = [
       { path: '', component: () => import('pages/IframePage.vue') }
     ]
   },
+  {
+    path: '/auth/oauth',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/OauthPage.vue') }
+    ]
+  },
+  {
+    path: '/auth/register/complete',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/OauthRegisterPage.vue') }
+    ],
+    meta: {requiresAuth: true}
+  },
 
   // Always leave this as last one,
   // but you can also remove it
@@ -48,6 +63,6 @@ const routes = [
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')
   }
-]
+];
 
 export default routes;

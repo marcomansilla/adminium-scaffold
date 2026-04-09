@@ -1,24 +1,31 @@
-import { defineBoot } from '#q-app/wrappers'
-import axios from 'axios'
+// src/boot/axios.js
+import { boot } from 'quasar/wrappers';
+import axios from 'axios';
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
-const api = axios.create({ baseURL: 'https://api.example.com' })
+const api = axios.create({
+  baseURL: 'http://localhost:3100/api',  // Match your backend port
+  timeout: 10000
+});
 
-export default defineBoot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
+// Request interceptor - MAKE SURE THIS IS RUNNING
+api.interceptors.request.use(
+  config => {
+    const token = window.localStorage.getItem('token');
 
-  app.config.globalProperties.$axios = axios
-  // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
-  //       so you won't necessarily have to import axios in each vue file
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log('Authorization header set:', config.headers.Authorization); // Debug
+    }
 
-  app.config.globalProperties.$api = api
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
-})
+    console.log('Final URL:', config.baseURL + config.url); // Debug
+    return config;
+  },
+  error => Promise.reject(error)
+);
+
+export default boot(({ app }) => {
+  app.config.globalProperties.$axios = axios;
+  app.config.globalProperties.$api = api;
+});
 
 export { api }
