@@ -21,6 +21,13 @@ const routes = [
     ]
   },
   {
+    path: '/admin/user/profile',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/ProfilePage.vue') }
+    ]
+  },
+  {
     path: '/admin/events',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -32,6 +39,13 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/CiasPage.vue') }
+    ]
+  },
+  {
+    path: '/admin/cotizador',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/QuoterPage.vue') }
     ]
   },
   {

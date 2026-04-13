@@ -5,33 +5,30 @@ import { GlobalNotificator } from './notificator';
 
 export function useInterceptor() {
   const setupInterceptors = (axiosInstance) => {
-    // Response interceptor - only handles responses
+    // Response interceptor
     axiosInstance.interceptors.response.use(
       (response) => {
-        // Just return successful responses
         return response;
       },
       (error) => {
-        // Handle only token expiration (401)
+        // Handle 401 errors
         if (error.response?.status === 401) {
           const authStore = useAuthStore();
+          const errorMessage = error.response?.data?.message || '';
 
-          // Clear auth data
-          authStore.Logout();
+          // Only clear auth if token is actually expired/invalid
+          if (errorMessage.includes('expired') || errorMessage.includes('Invalid')) {
+            authStore.Logout();
+            GlobalNotificator('Tu sesión ha expirado. Por favor inicia sesión nuevamente.', 'negative');
 
-          // Show notification
-          GlobalNotificator(
-            'Tu sesión ha expirado. Por favor inicia sesión nuevamente.',
-            'negative'
-          );
-
-          // Redirect to login if not already there
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
+            // Only redirect if not already on login page
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
           }
+          // For other 401 errors (like user not found, deleted_at), don't redirect
         }
 
-        // Return error to be handled by the calling code
         return Promise.reject(error);
       }
     );

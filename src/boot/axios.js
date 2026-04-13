@@ -3,21 +3,20 @@ import { boot } from 'quasar/wrappers';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3100/api',  // Match your backend port
+  baseURL: 'http://localhost:3100/api',
   timeout: 10000
 });
 
-// Request interceptor - MAKE SURE THIS IS RUNNING
+// Request interceptor - ALWAYS add token from localStorage
 api.interceptors.request.use(
   config => {
     const token = window.localStorage.getItem('token');
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('Authorization header set:', config.headers.Authorization); // Debug
     }
 
-    console.log('Final URL:', config.baseURL + config.url); // Debug
+    console.log('Request:', config.method.toUpperCase(), config.url, 'Token:', token);
     return config;
   },
   error => Promise.reject(error)

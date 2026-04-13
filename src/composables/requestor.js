@@ -18,29 +18,29 @@ export function useRequests() {
     return store.getAllData(module, uri, payload, secure, customHeaders);
   };
 
-  const createRecord = (module, uri, payload) => {
-    return store.createRecord(module, uri, payload);
+  const createRecord = (module, uri, payload, secure=false) => {
+    return store.createRecord(module, uri, payload, secure);
   };
 
-  const updateRecord = (module, uri, payload) => {
+  const updateRecord = (module, uri, payload, secure=false) => {
     return store.updateRecord(module, uri, payload);
   };
 
-  const deleteRecord = (module, payload) => {
+  const deleteRecord = (module, payload, secure=false) => {
     return store.deleteRecord(module, payload);
   };
 
-  const getModuleData = (module, uri, field) => {
-    return store.getModuleData(module, uri, field);
+  const getModuleData = (module, uri, field, secure=false) => {
+    return store.getModuleData(module, uri, field, secure);
   };
 
-  const onRequest = (props, module, uri, filter_text, filter_fields) => {
+  const onRequest = (props, module, uri, filter_text, filter_fields, secure=false) => {
     props.pagination.filter_text = filter_text;
     props.pagination.filter_fields = filter_fields;
     getAllData(module, uri, props.pagination);
   };
 
-  const uploadFile = (uri, formdata) => {
+  const uploadFile = (uri, formdata, secure=false) => {
     return store.uploadFile(uri, formdata);
   };
 

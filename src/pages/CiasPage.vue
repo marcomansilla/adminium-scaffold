@@ -155,7 +155,7 @@ q-page.q-pa-md
    cia.value = JSON.parse(JSON.stringify(ciaModel.value))
  }
  onMounted(() => {
-   getAllData('cias', 'cias/admin/cias')
+   getAllData('cias', 'cias/admin/cias', {}, true)
  })
 
  const updateData = async () => {
@@ -165,7 +165,7 @@ q-page.q-pa-md
  const showCiaUsers = async (data) => {
     cia.value = JSON.parse(JSON.stringify(data));
     GlobalNotificator('Consultando...', 'positive');
-    const res = await getModuleData('cias', `cias/admin/cia_relations/${cia.value.id}`, 'cia_users');
+    const res = await getModuleData('cias', `cias/admin/cia_relations/${cia.value.id}`, 'cia_users', true);
      if (res.status == 200) {
        res.data.message && GlobalNotificator(res.data.message, 'positive');
        cia_users.value = modules.cias.cia_users;

@@ -18,10 +18,15 @@ export function useAuth() {
     return store.GoogleLogin();
   };
 
+  const oauthSet = (token) => {
+    return store.OauthSet(token);
+  };
+
   return {
     loginUser,
     checkAuth,
     logout,
-    googleLogin
+    googleLogin,
+    oauthSet
   };
 }

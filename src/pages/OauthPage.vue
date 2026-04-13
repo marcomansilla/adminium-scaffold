@@ -15,41 +15,50 @@
  import { ref, onMounted } from 'vue'
  import { useRouter, useRoute } from 'vue-router'
  import { useQuasar } from 'quasar'
- import { api } from 'src/boot/axios'
+ import { GlobalNotificator } from '../composables/notificator'
+ import { useRequests } from '../composables/requestor'
+ import { useAuth } from '../composables/auth';
 
  const router = useRouter()
  const route = useRoute()
  const $q = useQuasar()
  const loading = ref(true)
  const error = ref('')
+ const { oauthSet } = useAuth()
+ const { getModuleData, modules } = useRequests()
 
  onMounted(async () => {
+   console.log(route)
    const token = route.query.token
    const requiresCompletion = route.query.requires_completion === 'true'
 
-   if (token) {
-     // Clean token if needed
-     let cleanToken = token
-
-     window.localStorage.setItem('token', token)
-     window.localStorage.setItem('isLoggedIn', true);
-     try {
-       const response = await api.get(`${import.meta.env.VITE_BASE_API}/auth/profile`)
-       const user = response.data
-       window.localStorage.setItem('profile', JSON.stringify(user))
-       if (requiresCompletion || user.requires_completion) {
-         router.push('auth/register/complete')
-       } else {
-         $q.notify({ type: 'positive', message: `Welcome ${profile.fullname}!` })
-         router.push('/')
-       }
-     } catch (err) {
-       error.value = 'Failed to get user info'
-       loading.value = false
-     }
-   } else {
-     error.value = 'No token received'
+   if (!token) {
+     error.value = 'No se ha recibido el token'
      loading.value = false
+     return
+   }
+   oauthSet(token);
+   try {
+     window.localStorage.setItem('token', token)
+     window.localStorage.setItem('isLoggedIn', 'true')
+     await getModuleData('auth', 'auth/profile', 'profile', true)
+     const user = modules?.auth?.profile
+     if (!user) {
+       throw new Error('No se pudo obtener el perfil')
+     }
+     window.localStorage.setItem('profile', JSON.stringify(user))
+     const needsCompletion = requiresCompletion || user.requires_completion === true
+     if (needsCompletion) {
+       router.push('/auth/register/complete')
+     } else {
+       GlobalNotificator(`Bienvenido ${user.fullname || user.email}`, 'positive')
+       router.push('/')
+     }
+   } catch (err) {
+     error.value = 'No se puede cargar la informacion del perfil'
+     loading.value = false
+     window.localStorage.removeItem('token')
+     window.localStorage.removeItem('isLoggedIn')
    }
  })
 

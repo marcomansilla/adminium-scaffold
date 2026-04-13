@@ -81,18 +81,22 @@
             )
 </template>
 
+<!-- src/pages/OauthRegisterPage.vue -->
 <script setup>
  import { ref, onMounted } from 'vue'
  import { useRouter } from 'vue-router'
- import { useQuasar, LocalStorage } from 'quasar'
- import { api } from 'src/boot/axios'
+ import { useQuasar } from 'quasar'
+ import { useRequests } from '../composables/requestor'
+ import { GlobalNotificator } from '../composables/notificator'
 
  const router = useRouter()
  const $q = useQuasar()
  const saving = ref(false)
+ const { createRecord } = useRequests()
 
  const form = ref({
    fullname: '',
+   email: '',
    phone: '',
    dni: '',
    cuit: '',
@@ -106,28 +110,44 @@
    saving.value = true
 
    try {
-     const response = await api.post('/auth/register/complete', form)
-     const user = response.data.user
+     const response = await createRecord('users', '/auth/register/complete', form.value, true)
+     console.log('Response:', response)
 
-     LocalStorage.set('user', user)
+     // Fix: Check different response structures
+     const user = response?.data?.user || response?.user || response?.data
 
-     $q.notify({
-       type: 'positive',
-       message: 'Registration completed successfully!'
-     })
+     if (!user) {
+       throw new Error('No user data received')
+     }
 
-     router.push('/dashboard')
+     // Update stored profile with complete data
+     window.localStorage.setItem('profile', JSON.stringify(user))
+
+     GlobalNotificator('Registro completado exitosamente', 'positive')
+     router.push('/')
    } catch (error) {
-     $q.notify({
-       type: 'negative',
-       message: error.response?.data?.message || 'Failed to complete registration'
-     })
+     console.error('Complete registration error:', error)
+     const message = error.response?.data?.message || error.message || 'Failed to complete registration'
+     GlobalNotificator(message, 'negative')
    } finally {
      saving.value = false
    }
  }
 
  onMounted(() => {
-   form.value = JSON.parse(window.localStorage.getItem('profile'));
+   // Get existing profile data from localStorage
+   const profile = window.localStorage.getItem('profile')
+   if (profile) {
+     const userData = JSON.parse(profile)
+     form.value.fullname = userData.fullname || ''
+     form.value.email = userData.email || ''
+     form.value.phone = userData.phone || ''
+     form.value.dni = userData.dni || ''
+     form.value.cuit = userData.cuit || ''
+     form.value.address = userData.address || ''
+     form.value.city = userData.city || ''
+     form.value.birthday = userData.birthday || ''
+     form.value.matricula = userData.matricula || ''
+   }
  })
 </script>
