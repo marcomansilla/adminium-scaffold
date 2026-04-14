@@ -28,7 +28,7 @@
  const { getModuleData, modules } = useRequests()
 
  onMounted(async () => {
-   console.log(route)
+   console.log(route, router)
    const token = route.query.token
    const requiresCompletion = route.query.requires_completion === 'true'
 

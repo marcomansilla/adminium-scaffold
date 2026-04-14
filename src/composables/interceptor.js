@@ -23,6 +23,7 @@ export function useInterceptor() {
 
             // Only redirect if not already on login page
             if (window.location.pathname !== '/login') {
+              console.log('test');
               window.location.href = '/login';
             }
           }

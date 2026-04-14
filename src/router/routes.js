@@ -49,13 +49,6 @@ const routes = [
     ]
   },
   {
-    path: '/admin/iframe',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/IframePage.vue') }
-    ]
-  },
-  {
     path: '/auth/oauth',
     component: () => import('layouts/MainLayout.vue'),
     children: [
