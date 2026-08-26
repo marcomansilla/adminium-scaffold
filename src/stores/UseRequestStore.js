@@ -240,6 +240,38 @@ export const useRequestStore = defineStore('requests', {
       }
     },
 
+    async requestModuleData(module, uri, field, payload, secure = false) {
+      if (!this.modules[module]) {
+        this.initializeModule(module);
+      }
+
+      this.clearModuleErrors(module);
+      this.modules[module][`loading${field}`] = true;
+
+      let response = {};
+      let headers = {};
+      if (secure) {
+        const authStore = useAuthStore();
+        headers = {...authStore.getHeaders};
+      }
+      try {
+        const res = await axiosInstance.post(`${this.BASE_URL}/${uri}`, payload, {
+          headers: headers
+        }, );
+        this.modules[module][field] = res.data.data;
+        response = res;
+
+        return response;
+
+      } catch (error) {
+        this.setModuleError(module, error.response?.data?.message || error.message);
+        return error.response?.data || error;
+
+      } finally {
+        this.modules[module][`loading${field}`] = false;
+      }
+    },
+
     async uploadFile(uri, formdata, secure = false) {
       let response = {};
 

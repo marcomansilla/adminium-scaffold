@@ -34,6 +34,10 @@ export function useRequests() {
     return store.getModuleData(module, uri, field, secure);
   };
 
+  const requestModuleData = (module, uri, field, payload, secure=false) => {
+    return store.requestModuleData(module, uri, field, payload, secure);
+  };
+
   const onRequest = (props, module, uri, filter_text, filter_fields, secure=false) => {
     props.pagination.filter_text = filter_text;
     props.pagination.filter_fields = filter_fields;
@@ -48,6 +52,7 @@ export function useRequests() {
     initializeModule,
     getAllData,
     getModuleData,
+    requestModuleData,
     createRecord,
     updateRecord,
     deleteRecord,

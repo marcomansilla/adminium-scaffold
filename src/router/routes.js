@@ -49,6 +49,13 @@ const routes = [
     ]
   },
   {
+    path: '/admin/cotizadores/elnorte',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/quoters/ElnortePage.vue') }
+    ]
+  },
+  {
     path: '/auth/oauth',
     component: () => import('layouts/MainLayout.vue'),
     children: [
