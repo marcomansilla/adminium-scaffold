@@ -23,7 +23,7 @@ q-page.q-pa-md
         title="Datos del vehiculo"
         icon="create_new_folder"
         :done="step > 2")
-        steptwo-component
+        steptwo-component(:vehicle="vehiculo")
         q-stepper-navigation
           q-btn.q-ml-sm(
             flat=""
@@ -35,8 +35,7 @@ q-page.q-pa-md
             @click="step = 4"
             color="primary"
             label="Continar")
-      q-step(:name="3" title="Opciones" icon="assignment" disable="") This step wont show up because it is disabled.
-      q-step(:name="4" title="Create an ad" icon="add_comment") Try out different ad text to see what brings in the most customers, and learn how to enhance your ads using features like ad extensions. If you run into any problems with your ads, find out how to tell if theyre running and how to resolve approval issues.
+      q-step(:name="3" title="Opciones disponibles" icon="assignment")
         q-stepper-navigation
           q-btn(color="primary" label="Finish")
           q-btn(flat="" @click="step = 2" color="primary" label="Back" class="q-ml-sm")
@@ -57,6 +56,16 @@ const tomador = ref({
   fecha_inicio: '',
   fecha_fin: '',
   cuotas: 4
+})
+
+const vehiculo = ref({
+  suma_asegurada: 0,
+  provincia_id: 4,
+  es_0km: false,
+  gnc: false,
+  limiterc: null,
+  ajuste: null,
+  Accesorios: []
 })
 const step = ref(1)
 </script>

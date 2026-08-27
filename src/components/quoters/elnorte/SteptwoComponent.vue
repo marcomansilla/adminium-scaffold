@@ -21,16 +21,10 @@
                   rounded @click="findCar()")
       .col-12.mp-box(v-if="current_vehicle")
         p.mp-title Vehiculo
+        p {{form.vehicle}}
         .row
           .col-3.q-pa-md
-            q-select(
-              label="Año"
-              v-model="form.vehicle.anio"
-              :options="current_vehicle.Valores"
-              :option-value="opt => (Object(opt) === opt && 'Anio' in opt ? opt.Anio : null)"
-              :option-label="opt => (Object(opt) === opt && 'Anio' in opt ? opt.Anio : null)"
-              emit-value
-              map-options)
+            q-input(v-model="current_vehicle.Anio" label="Año" disable)
           .col-3.q-pa-md
             q-input(label="Marca" v-model="current_vehicle.Marca.Nombre" disable)
           .col-3.q-pa-md
@@ -45,7 +39,8 @@
               emit-value
               map-options)
           .col-3.q-pa-md
-            q-input(v-model="form.vehicle.suma_asegurada" disable label="Suma asegurada")
+            q-input(v-model="secured_amount" disable label="Suma asegurada")
+            p suma {{secured_amount}}
           .col-3.q-pa-md
             q-select(
               v-model="form.vehicle.provincia_id"
@@ -124,6 +119,13 @@
               p.mp-title Accesorios
               p accesorio {{accesorio}}
               p accesorios {{form.vehicle.Accesorios}}
+              p accesorios {{current_vehicle.Accesorios}}
+              q-chip(
+                removable
+                color="secondary"
+                text-color="white"
+                v-for="(val, key) in form.vehicle.Accesorios"
+                @remove="removeAccesory(key)") {{val.Nombre}} ${{Number(val.Valor).toLocaleString()}}
               .row
                 .col-3.q-mr-md
                   q-select(
@@ -187,7 +189,7 @@
  import { useRequests } from '../../../composables/requestor';
  import { Provincias } from '../../../utils/provincias';
 
-
+ const props = defineProps(['vehicle']);
  const { getModuleData, requestModuleData, modules } = useRequests();
  const provincias_list = ref(Provincias);
  const localidades_list = ref([]);
@@ -249,9 +251,25 @@
  }
 
  const addAccesory = () => {
+   let element = JSON.parse(JSON.stringify(current_vehicle.value.Accesorios.filter(ac => ac.Id == accesorio.value.Id)[0]));
+   console.log(element)
+   accesorio.value.Nombre = element.Nombre;
    form.value.vehicle.Accesorios.push(accesorio.value)
-   accesorio.value = {Id: null, Valor: null}
+   accesorio.value = {Id: null, Valor: null, Nombre: null}
  }
+
+ const removeAccesory = (id) => {
+   console.log(form.value.vehicle.Accesorios.splice(id, 1), id)
+ }
+
+ const secured_amount = computed(() => {
+    const value = JSON.parse(JSON.stringify(current_vehicle.value.Valores.filter(vl => vl.Anio == current_vehicle.value.Anio)[0]));
+    console.log(value)
+    if (value) {
+      return `$${Number(value.Valor).toLocaleString()}`
+    }
+    return 'N/I'
+ })
 
  const localidades = computed(() => {
    const lc = modules.elnorte?.localidades?.Resultado ? modules.elnorte?.localidades?.Resultado : []
@@ -265,6 +283,7 @@
      requestModuleData('elnorte', 'integrations/elnorte/localidades', 'localidades', {provincia_id: form.value.vehicle.provincia_id})
      form.value.vehicle.limiterc = 3 || null;
      form.value.vehicle.ajuste = 10 || null;
+     form.value.vehicle.Anio = ck.Anio;
    }
    return ck
  });
@@ -274,13 +293,13 @@
  }
 
  const getAdicionales = async () => {
-   if (form.value.vehicle.anio && form.value.vehicle.uso) {
+   if (form.value.vehicle.Anio && form.value.vehicle.uso) {
      const payload = {
        MarcaId: current_vehicle.value.Marca.Id,
        ModeloId: current_vehicle.value.Modelo.Id,
        SubModeloId: current_vehicle.value.SubModelo.Id,
        UsoId: form.value.vehicle.uso,
-       Anio: form.value.vehicle.anio
+       Anio: form.value.vehicle.Anio
      }
      await requestModuleData('elnorte', 'integrations/elnorte/adicionales', 'adicionales', payload)
    }
