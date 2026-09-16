@@ -1,4 +1,4 @@
-// Normalizes a date in format 'DD/MM/YYYY'
+// Normalizes a date from format 'DD/MM/YYYY'
 export const normalizeDate = (value) => {
   if (!value) return null;
 
@@ -96,3 +96,5 @@ export const formatUTC = (date, useUTC = true) =>  {
   }
   return result;
 };
+
+export const toYMD = (dateStr) => dateStr.split('-').reverse().join('-');

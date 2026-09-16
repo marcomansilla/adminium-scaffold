@@ -3,25 +3,17 @@
   div
     p.mp-title Busqueda
     .row
-      .col-8
+      .col-12
         .row
-          .col-6
-            q-radio(v-model="finder" val="search" label="Ingresar datos")
-            span &nbsp&nbsp
-            q-radio(v-model="finder" val="plate" label="Patente")
-          .col-6(v-if="finder == 'plate'")
-            .row.flex-center
-              .col-6
-                q-input.q-pr-sm(v-model="plate" label="Ingrese el dominio")
-              .col-6
-                q-btn(
-                  label="Buscar..."
-                  icon="search"
-                  color="primary"
-                  rounded @click="findCar()")
+          .col-12.flex.flex-center.center
+            q-input.q-pr-sm(v-model="plate" label="Ingrese el dominio" style="width:15%")
+            q-btn(
+              label="Buscar..."
+              icon="search"
+              color="primary"
+              rounded @click="findCar()")
       .col-12.mp-box(v-if="current_vehicle")
         p.mp-title Vehiculo
-        p {{form.vehicle}}
         .row
           .col-3.q-pa-md
             q-input(v-model="current_vehicle.Anio" label="Año" disable)
@@ -32,8 +24,9 @@
           .col-3.q-pa-md
             q-select(
               label="Uso"
-              v-model="form.vehicle.uso"
+              v-model="props.vehicle.uso"
               :options="current_vehicle.Usos"
+              :disable="current_vehicle.Usos.length == 1"
               :option-value="opt => (Object(opt) === opt && 'Id' in opt ? opt.Id : null)"
               :option-label="opt => (Object(opt) === opt && 'Descripcion' in opt ? opt.Descripcion : null)"
               emit-value
@@ -43,7 +36,7 @@
             p suma {{secured_amount}}
           .col-3.q-pa-md
             q-select(
-              v-model="form.vehicle.provincia_id"
+              v-model="props.vehicle.provincia_id"
               label="Provincia"
               use-input
               hide-selected
@@ -62,7 +55,7 @@
               fill-input
               :options="localidades_list"
               @filter="filterLocalidades"
-              v-model="form.vehicle.localidad_id"
+              v-model="props.vehicle.localidad_id"
               :option-value="opt => (Object(opt) === opt && 'LocalidadId' in opt ? opt.LocalidadId : null)"
               :option-label="opt => (Object(opt) === opt && 'NombreCompleto' in opt ? opt.NombreCompleto : null)"
               emit-value
@@ -70,9 +63,9 @@
           .col-3.q-pa-md
             .row
               .col-6
-                q-checkbox(label="Es 0km" v-model="form.vehicle.es_0km")
+                q-checkbox(label="Es 0km" v-model="props.vehicle.es_0km" :disable="Number(current_year) > Number(current_vehicle.Anio)")
               .col-6
-                q-checkbox(label="Tiene GNC" v-model="form.vehicle.gnc")
+                q-checkbox(label="Tiene GNC" v-model="props.vehicle.gnc")
       .col-12(v-if="current_vehicle")
         .row
           .col-12
@@ -86,7 +79,7 @@
                     hide-selected
                     fill-input
                     :options="current_vehicle.Limites"
-                    v-model="form.vehicle.limiterc"
+                    v-model="props.vehicle.limiterc"
                     :option-value="opt => (Object(opt) === opt && 'Codigo' in opt ? opt.Codigo : null)"
                     :option-label="opt => (Object(opt) === opt && 'importe' in opt ? opt.importe : null)"
                     emit-value
@@ -98,7 +91,7 @@
                     hide-selected
                     fill-input
                     :options="current_vehicle.AjustesAutomaticos"
-                    v-model="form.vehicle.ajuste"
+                    v-model="props.vehicle.ajuste"
                     :option-value="opt => (Object(opt) === opt && 'Id' in opt ? opt.Id : null)"
                     :option-label="opt => (Object(opt) === opt && 'Nombre' in opt ? opt.Nombre : null)"
                     emit-value
@@ -107,7 +100,7 @@
             .mp-box
               p.mp-title Adicionales
               .row#adicionales
-                .col-4.q-pa-lg(v-for="adicional in adicionales.Adicionales")
+                .col-4.q-pa-lg(v-for="adicional in props.adicionales.Adicionales")
                   q-btn(
                     :label="adicional.Nombre"
                     :icon="mapIcon(adicional.Equivalente)"
@@ -117,14 +110,11 @@
           .col-12
             .mp-box
               p.mp-title Accesorios
-              p accesorio {{accesorio}}
-              p accesorios {{form.vehicle.Accesorios}}
-              p accesorios {{current_vehicle.Accesorios}}
               q-chip(
                 removable
                 color="secondary"
                 text-color="white"
-                v-for="(val, key) in form.vehicle.Accesorios"
+                v-for="(val, key) in props.vehicle.Accesorios"
                 @remove="removeAccesory(key)") {{val.Nombre}} ${{Number(val.Valor).toLocaleString()}}
               .row
                 .col-3.q-mr-md
@@ -189,26 +179,14 @@
  import { useRequests } from '../../../composables/requestor';
  import { Provincias } from '../../../utils/provincias';
 
- const props = defineProps(['vehicle']);
+ const props = defineProps(['vehicle', 'adicionales']);
  const { getModuleData, requestModuleData, modules } = useRequests();
  const provincias_list = ref(Provincias);
  const localidades_list = ref([]);
  const finder = ref('plate');
  const plate = ref('');
  const accesorio = ref({Id: null, Valor: null});
- const adicionales = ref('');
- const form = ref({
-   vehicle:{
-     suma_asegurada: 0,
-     provincia_id: 4,
-     es_0km: false,
-     gnc: false,
-     limiterc: null,
-     ajuste: null,
-     Accesorios: []
-   }
- });
-
+ const current_year = new Date().getFullYear();
  const mapIcon = (name) => {
     const dict = {
       'GRANIZO': 'local_car_wash',
@@ -252,23 +230,23 @@
 
  const addAccesory = () => {
    let element = JSON.parse(JSON.stringify(current_vehicle.value.Accesorios.filter(ac => ac.Id == accesorio.value.Id)[0]));
-   console.log(element)
    accesorio.value.Nombre = element.Nombre;
-   form.value.vehicle.Accesorios.push(accesorio.value)
+   props.vehicle.Accesorios.push(accesorio.value)
    accesorio.value = {Id: null, Valor: null, Nombre: null}
  }
 
  const removeAccesory = (id) => {
-   console.log(form.value.vehicle.Accesorios.splice(id, 1), id)
+   props.vehicle.Accesorios.splice(id, 1)
  }
 
  const secured_amount = computed(() => {
     const value = JSON.parse(JSON.stringify(current_vehicle.value.Valores.filter(vl => vl.Anio == current_vehicle.value.Anio)[0]));
-    console.log(value)
+    let result = 'N/I'
     if (value) {
-      return `$${Number(value.Valor).toLocaleString()}`
+      result = `$${Number(value.Valor).toLocaleString()}`
+      props.vehicle.Valor = value.Valor;
     }
-    return 'N/I'
+    return result
  })
 
  const localidades = computed(() => {
@@ -280,66 +258,78 @@
  const current_vehicle = computed(() => {
    const ck = modules.elnorte?.carbyplate ? modules.elnorte.carbyplate : null;
    if (ck) {
-     requestModuleData('elnorte', 'integrations/elnorte/localidades', 'localidades', {provincia_id: form.value.vehicle.provincia_id})
-     form.value.vehicle.limiterc = 3 || null;
-     form.value.vehicle.ajuste = 10 || null;
-     form.value.vehicle.Anio = ck.Anio;
+     requestModuleData('elnorte', 'integrations/elnorte/localidades', 'localidades', {provincia_id: props.vehicle.provincia_id})
+     props.vehicle.limiterc = 3 || null;
+     props.vehicle.ajuste = 10 || null;
+     props.vehicle.Anio = ck.Anio;
+     props.vehicle.MarcaId = ck.Marca.Id
+     props.vehicle.ModeloId = ck.Modelo.Id;
+     props.vehicle.SubmodeloId = ck.SubModelo.Id;
+     props.vehicle.es_0km = Number(ck.Anio) > Number(current_year) ? true : false;
+     props.vehicle.codia = ck.InfoAutoCodigo;
    }
+
+   console.log(JSON.parse(JSON.stringify(ck)), props.vehicle.es_0km)
    return ck
  });
 
  const findCar = () => {
+   props.vehicle.is_domain = true;
    requestModuleData('elnorte', 'integrations/elnorte/carbyplate', 'carbyplate', {patente: plate.value})
  }
 
  const getAdicionales = async () => {
-   if (form.value.vehicle.Anio && form.value.vehicle.uso) {
+   if (props.vehicle.Anio && props.vehicle.uso) {
      const payload = {
        MarcaId: current_vehicle.value.Marca.Id,
        ModeloId: current_vehicle.value.Modelo.Id,
        SubModeloId: current_vehicle.value.SubModelo.Id,
-       UsoId: form.value.vehicle.uso,
-       Anio: form.value.vehicle.Anio
+       UsoId: props.vehicle.uso,
+       Anio: props.vehicle.Anio
      }
      await requestModuleData('elnorte', 'integrations/elnorte/adicionales', 'adicionales', payload)
    }
-   const ad = JSON.parse(JSON.stringify(modules.elnorte?.adicionales ? modules.elnorte.adicionales : []));
+   const ad = await  JSON.parse(JSON.stringify(modules.elnorte?.adicionales ? modules.elnorte.adicionales : []));
    if (Object.keys(ad).length > 0) {
      for(let i =0;i<ad.Adicionales.length;i++) {
-       ad.Adicionales[i].Selected = false;
+
+       if ([2,20,95,99].includes(ad.Adicionales[i].Id)) {
+         ad.Adicionales[i].Selected = true;
+       } else {
+         ad.Adicionales[i].Selected = false;
+       }
      }
    }
-   return adicionales.value = ad
+   props.adicionales.Adicionales = ad.Adicionales
  }
 
  const toggleAditional = (id) => {
-   const index = adicionales.value.Adicionales.findIndex(el => el.Id == id);
-   console.log(adicionales.value.Adicionales[index])
-   if (adicionales.value.Adicionales[index].Selected == true) {
-      adicionales.value.Adicionales[index].Selected = false
+   const index = props.adicionales.Adicionales.findIndex(el => el.Id == id);
+   if (props.adicionales.Adicionales[index].Selected == true) {
+      props.adicionales.Adicionales[index].Selected = false
    } else {
-     for(let i=0;i<adicionales.value.Adicionales.length;i++) {
-       const el = adicionales.value.Adicionales[i]
-       if (el.Equivalente == adicionales.value.Adicionales[index].Equivalente && el.Id != id && el.Selected == true) {
-         adicionales.value.Adicionales[i].Selected = false
+     for(let i=0;i<props.adicionales.Adicionales.length;i++) {
+       const el = props.adicionales.Adicionales[i]
+       if (el.Equivalente == props.adicionales.Adicionales[index].Equivalente && el.Id != id && el.Selected == true) {
+         props.adicionales.Adicionales[i].Selected = false
        }
      }
-     adicionales.value.Adicionales[index].Selected = true
+     props.adicionales.Adicionales[index].Selected = true
    }
-   console.log(index)
  }
 
- watch (() => form.value.vehicle, (nv, ov) => {
+ watch(() => props.vehicle, (nv, ov) => {
    getAdicionales()
  }, {deep: true})
- watch(() => form.value.vehicle.anio, (nv, ov)=> {
+
+ watch(() => props.vehicle.anio, (nv, ov)=> {
    if (nv) {
      const valor = current_vehicle.value.Valores.filter(cv => cv.Anio  == nv)[0].Valor;
-     form.value.vehicle.suma_asegurada = Number(valor).toLocaleString();
+     props.vehicle.Valor = Number(valor).toLocaleString();
    }
  }, {deep: true} )
 
- watch(() => form.value.vehicle.provincia_id, (nv, ov) => {
+ watch(() => props.vehicle.provincia_id, (nv, ov) => {
    requestModuleData('elnorte', 'integrations/elnorte/localidades', 'localidades', {provincia_id: nv})
  })
 

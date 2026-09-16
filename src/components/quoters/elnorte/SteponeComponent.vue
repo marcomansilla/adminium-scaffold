@@ -20,11 +20,11 @@
                     div.row.items-center.justify-end
                       q-btn(v-close-popup label="Close" color="primary" flat)
         .col-3.q-pa-sm
-          q-input(filled v-model="props.tomador.fecha_inicio" mask="date" label="Fecha de fin")
+          q-input(filled v-model="props.tomador.fecha_fin" mask="date" label="Fecha de fin")
             template(v-slot:append)
               q-icon(name="event" class="cursor-pointer")
                 q-popup-proxy(cover transition-show="scale" transition-hide="scale")
-                  q-date(v-model="props.tomador.fecha_inicio" locale="en-GB")
+                  q-date(v-model="props.tomador.fecha_fin")
                     div.row.items-center.justify-end
                       q-btn(v-close-popup label="Close" color="primary" flat)
         .col-3.q-pa-sm
@@ -44,58 +44,53 @@
         q-select(
           label="Condicion fiscal"
           v-model="props.tomador.condicion_fiscal"
-          :options="condiciones_fiscales"
+          :option-value="opt => (Object(opt) === opt && 'Valor' in opt ? opt.Valor : null)"
+          :option-label="opt => (Object(opt) === opt && 'Descripcion' in opt ? opt.Descripcion : null)"
+          :options="IVA"
           emit-value
           map-options)
       .col-4.q-pa-sm
         q-select(
           label="Condicion IIB"
           v-model="props.tomador.condicion_iibb"
-          :options="condiciones_iibb"
+          :option-value="opt => (Object(opt) === opt && 'Valor' in opt ? opt.Valor : null)"
+          :option-label="opt => (Object(opt) === opt && 'Descripcion' in opt ? opt.Descripcion : null)"
+          :options="IIBB"
           emit-value
           map-options)
 
   #insured_info.mp-box
     p.mp-title Asegurado
     .row.q-pb-sm
-      .col-4.q-pa-sm
+      .col-3.q-pa-sm
         q-input(
           label="Asegurado"
           v-model="props.tomador.asegurado")
-      .col-4.q-pa-sm
+      .col-3.q-pa-sm
         q-select(
           label="Tipo de documento"
           v-model="props.tomador.tipo_documento"
           :options="tipos_documento"
           emit-value
           map-options)
-      .col-4.q-pa-sm
+      .col-3.q-pa-sm
         q-input(label="Numero" v-model="props.tomador.numero")
-</template>
+      .col-3.q-pa-sm
+        q-input(label="E-mail" v-model="props.tomador.email")
+  </template>
 
 <script setup>
  import { ref, onMounted } from 'vue';
- import { convertDate, modifyDate } from '../../../composables/dateHandler';
+ import { convertDate, modifyDate, normalizeDate } from '../../../composables/dateHandler';
+ import { IVA, IIBB } from '../../../utils/fiscal';
 
  const props = defineProps(['tomador']);
  const vigencia = ref('anual');
- const start_date = ref(convertDate(new Date()));
+ const start_date = ref('');
  const options=[2,3,4];
  const tipos_persona = ref([
    {label: 'Fisica', value: 'F'},
    {label: 'Juridica', value: 'J'}])
- const condiciones_fiscales = ref([
-   {label:"Consumidor Final", value: 'cf'},
-   {label:"Responsable Inscripto", value: 'ri'},
-   {label:"Monotributo", value: 'mo'},
-   {label:"Exento", value: 'ex'},
-   {label:"Sujeto no categorizado", value: 'nc'},
- ])
- const condiciones_iibb = ref([
-   {label:"No inscripto", value: 'n'},
-   {label:"Inscripto", value: 'i'},
-   {label:"Convenio multilateral", value: 'c'},
- ])
  const tipos_documento = ref([
    {value:1,label:"DNI"},
    {value:2,label:"CUIT"},
@@ -103,7 +98,7 @@
    {value:4,label:"PAS"},
    {value:8,label:"CUE"},     ])
  onMounted(() => {
-   props.tomador.fecha_inicio = start_date.value
-   props.tomador.fecha_fin = modifyDate(start_date.value, 365)
+   props.tomador.fecha_inicio = normalizeDate(new Date())
+   props.tomador.fecha_fin = normalizeDate(modifyDate(convertDate(new Date()), 365))
  })
 </script>
