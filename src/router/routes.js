@@ -21,6 +21,13 @@ const routes = [
     ]
   },
   {
+    path: '/admin/user/profile',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/ProfilePage.vue') }
+    ]
+  },
+  {
     path: '/admin/events',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -35,11 +42,33 @@ const routes = [
     ]
   },
   {
-    path: '/admin/iframe',
+    path: '/admin/cotizador',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IframePage.vue') }
+      { path: '', component: () => import('pages/QuoterPage.vue') }
     ]
+  },
+  {
+    path: '/admin/cotizadores/elnorte',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/quoters/ElnortePage.vue') }
+    ]
+  },
+  {
+    path: '/auth/oauth',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/OauthPage.vue') }
+    ]
+  },
+  {
+    path: '/auth/register/complete',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/OauthRegisterPage.vue') }
+    ],
+    meta: {requiresAuth: true}
   },
 
   // Always leave this as last one,
@@ -48,6 +77,6 @@ const routes = [
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')
   }
-]
+];
 
 export default routes;

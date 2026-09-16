@@ -54,6 +54,33 @@ q-layout(view="lHh Lpr lFf")
      link: '/admin/cias'
    },
    {
+     title: 'Cotizadores',
+     caption: 'Cotizadores por CIA',
+     icon: 'request_quote',
+     submenu: [
+       {
+         title: 'El norte',
+         caption: 'Cotizador el norte',
+         link: '/admin/cotizadores/elnorte',
+       },
+       {
+         title: 'La Perseverancia',
+         caption: 'Cotizador LPS',
+         link: '/admin/cotizador',
+       },
+       {
+         title: 'RUS',
+         caption: 'Cotizador RUS',
+         link: '/admin/cotizador',
+       },
+       {
+         title: 'Mercantil Andina',
+         caption: 'Cotizador Mercantil',
+         link: '/admin/cotizador',
+       }
+     ]
+   },
+   {
      title: 'Eventos',
      caption: 'Notificaciones',
      icon: 'psychology',
@@ -91,6 +118,9 @@ q-layout(view="lHh Lpr lFf")
    initializeErrors('cias')
    initializeModule('events')
    initializeErrors('events')
+   initializeModule('quoter')
+   initializeErrors('quoter')
+   initializeErrors('elnorte')
    checkAuth('/', '/login')
  })
 

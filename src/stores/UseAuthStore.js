@@ -55,16 +55,22 @@ export const useAuthStore = defineStore('auth', {
       if (window.localStorage.getItem('isLoggedIn')) {
         this.isLoggedIn = true;
         this.token = window.localStorage.getItem('token');
-        this.profile = JSON.parse(window.localStorage.getItem('profile'));
+        this.profile = JSON.parse(window.localStorage.getItem('profile')) || {};
       } else {
         this.router.push(fail);
-        GlobalNotificator('Ingrese sus credenciales', 'positive');
       }
     },
     Logout() {
       GlobalNotificator('Se ha cerrado la sesion.', 'positive');
       window.localStorage.clear();
       this.router.push('/login');
-    }
+    },
+    GoogleLogin() {
+      window.location.href = `${this.BASE_URL}/auth/google/login`;
+    },
+    OauthSet(token) {
+      this.token = token;
+      this.isLoggedIn = true;
+    },
   },
 });

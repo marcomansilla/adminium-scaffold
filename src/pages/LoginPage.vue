@@ -11,7 +11,21 @@
             q-input(label="Contraseña" type="password" v-model="credentials.password")
               template(v-slot:prepend)
                 q-icon(name="key")
-            q-btn.q-mt-xl.full-width(icon="login" size="lg" color="primary" @click="login") &nbsp&nbsp Ingresar
+            q-btn.q-mt-xl.full-width(
+              icon="login"
+              size="lg"
+              color="primary"
+              @click="login") &nbsp&nbsp Ingresar
+            .text-center.q-mb-sm Or continue with
+            q-btn(
+              size="lg"
+              color="blue"
+              icon="fab fa-google"
+              label="Continuar con Google"
+              outline
+              class="full-width"
+              @click="googleLogin"
+            )
             .row
               .col-6
               .col-6.q-pt-lg(style="text-align: right")
@@ -25,7 +39,7 @@
  import { GlobalNotificator } from '../composables/notificator.js';
 
  const router = useRouter();
- const { loginUser } = useAuth();
+ const { loginUser, googleLogin } = useAuth();
  const credentials = ref({
    email: '',
    password:''
@@ -40,6 +54,7 @@
    }
    console.log(res)
  }
+
 </script>
 
 <style lang="scss">

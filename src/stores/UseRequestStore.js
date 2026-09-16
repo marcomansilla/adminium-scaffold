@@ -1,8 +1,9 @@
 // stores/UseRequestStore.js
 import { defineStore } from 'pinia';
 import { GlobalNotificator } from '../composables/notificator.js';
-import axios from 'axios';
 import { useInterceptor } from '../composables/interceptor';
+import { useAuthStore } from './UseAuthStore';
+import axios from 'axios';
 
 // Create axios instance
 const axiosInstance = axios.create({
@@ -102,7 +103,6 @@ export const useRequestStore = defineStore('requests', {
         const authStore = useAuthStore();
         headers = authStore.getHeaders;
       }
-
       try {
         const res = await axiosInstance.post(`${this.BASE_URL}/${uri}`, payload, {
           headers: headers
@@ -219,9 +219,8 @@ export const useRequestStore = defineStore('requests', {
       let headers = {};
       if (secure) {
         const authStore = useAuthStore();
-        headers = authStore.getHeaders;
+        headers = {...authStore.getHeaders};
       }
-
       try {
         const res = await axiosInstance.get(`${this.BASE_URL}/${uri}`, {
           headers: headers
@@ -238,6 +237,38 @@ export const useRequestStore = defineStore('requests', {
 
       } finally {
         this.modules[module].loading = false;
+      }
+    },
+
+    async requestModuleData(module, uri, field, payload, secure = false) {
+      if (!this.modules[module]) {
+        this.initializeModule(module);
+      }
+
+      this.clearModuleErrors(module);
+      this.modules[module][`loading${field}`] = true;
+
+      let response = {};
+      let headers = {};
+      if (secure) {
+        const authStore = useAuthStore();
+        headers = {...authStore.getHeaders};
+      }
+      try {
+        const res = await axiosInstance.post(`${this.BASE_URL}/${uri}`, payload, {
+          headers: headers
+        }, );
+        this.modules[module][field] = res.data.data;
+        response = res;
+
+        return response;
+
+      } catch (error) {
+        this.setModuleError(module, error.response?.data?.message || error.message);
+        return error.response?.data || error;
+
+      } finally {
+        this.modules[module][`loading${field}`] = false;
       }
     },
 
@@ -260,7 +291,6 @@ export const useRequestStore = defineStore('requests', {
         return response;
 
       } catch (error) {
-        console.error('Error in uploadFile:', error);
         return error.response?.data || error;
       }
     }
