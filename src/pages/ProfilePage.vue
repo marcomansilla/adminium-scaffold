@@ -2,7 +2,6 @@
 .q-pa-md
   .row.justify-center
     .col-sm-8.col-md-6
-    p {{form}}
       q-card
         q-card-section
           .text-h6.text-center Perfil de usuario
