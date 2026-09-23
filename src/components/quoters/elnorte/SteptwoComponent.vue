@@ -6,12 +6,17 @@
       .col-12
         .row
           .col-12.flex.flex-center.center
-            q-input.q-pr-sm(v-model="plate" label="Ingrese el dominio" style="width:15%")
-            q-btn(
-              label="Buscar..."
-              icon="search"
-              color="primary"
-              rounded @click="findCar()")
+            form(@submit.prevent="findCar()" style="min-width:100%")
+              .row
+                .col-12.q-pb-md.flex.flex-center.center
+                  q-input(v-model="plate" label="Ingrese el dominio" style="width:15%")
+                .col-12.flex.flex-center.center
+                  q-btn(
+                    type="submit"
+                    label="Buscar..."
+                    icon="search"
+                    color="primary")
+
       .col-12.mp-box(v-if="current_vehicle")
         p.mp-title Vehiculo
         .row
@@ -49,6 +54,7 @@
               map-options)
           .col-3.q-pa-md
             q-select(
+              :key="props.vehicle.localidad_id"
               label="Localidad"
               use-input
               hide-selected
@@ -175,12 +181,15 @@
 </template>
 
 <script setup>
+ import { useQuasar } from 'quasar';
+ import { GlobalNotificator } from '../../../composables/notificator.js';
  import { ref, computed, watch } from 'vue';
  import { useRequests } from '../../../composables/requestor';
  import { Provincias } from '../../../utils/provincias';
 
+ const $q = useQuasar();
  const props = defineProps(['vehicle', 'adicionales']);
- const { getModuleData, requestModuleData, modules } = useRequests();
+ const { getModuleData, requestModuleData, modules, resetModuleField } = useRequests();
  const provincias_list = ref(Provincias);
  const localidades_list = ref([]);
  const finder = ref('plate');
@@ -188,12 +197,12 @@
  const accesorio = ref({Id: null, Valor: null});
  const current_year = new Date().getFullYear();
  const mapIcon = (name) => {
-    const dict = {
-      'GRANIZO': 'local_car_wash',
-      'FLIAPROTEGIDA': 'diversity_1',
-      'SOS': 'construction',
-      'MEGACOBERTURA': 'engineering'}
-    return dict[name]
+   const dict = {
+     'GRANIZO': 'local_car_wash',
+     'FLIAPROTEGIDA': 'diversity_1',
+     'SOS': 'construction',
+     'MEGACOBERTURA': 'engineering'}
+   return dict[name]
  }
 
  const filterProvincias = (val, update, abort) => {
@@ -231,7 +240,10 @@
  const addAccesory = () => {
    let element = JSON.parse(JSON.stringify(current_vehicle.value.Accesorios.filter(ac => ac.Id == accesorio.value.Id)[0]));
    accesorio.value.Nombre = element.Nombre;
-   props.vehicle.Accesorios.push(accesorio.value)
+   props.vehicle.Accesorios.push({
+     Id: accesorio.value.Id,
+     Valor: accesorio.value.Valor
+   })
    accesorio.value = {Id: null, Valor: null, Nombre: null}
  }
 
@@ -240,13 +252,13 @@
  }
 
  const secured_amount = computed(() => {
-    const value = JSON.parse(JSON.stringify(current_vehicle.value.Valores.filter(vl => vl.Anio == current_vehicle.value.Anio)[0]));
-    let result = 'N/I'
-    if (value) {
-      result = `$${Number(value.Valor).toLocaleString()}`
-      props.vehicle.Valor = value.Valor;
-    }
-    return result
+   const value = JSON.parse(JSON.stringify(current_vehicle.value.Valores.filter(vl => vl.Anio == current_vehicle.value.Anio)[0]));
+   let result = 'N/I'
+   if (value) {
+     result = `$${Number(value.Valor).toLocaleString()}`
+     props.vehicle.Valor = value.Valor;
+   }
+   return result
  })
 
  const localidades = computed(() => {
@@ -256,26 +268,57 @@
  })
 
  const current_vehicle = computed(() => {
-   const ck = modules.elnorte?.carbyplate ? modules.elnorte.carbyplate : null;
-   if (ck) {
+   var ck = modules.elnorte?.carbyplate ? modules.elnorte.carbyplate : null;
+   if (ck && ck.Marca.Id) {
      requestModuleData('elnorte', 'integrations/elnorte/localidades', 'localidades', {provincia_id: props.vehicle.provincia_id})
      props.vehicle.limiterc = 3 || null;
      props.vehicle.ajuste = 10 || null;
      props.vehicle.Anio = ck.Anio;
-     props.vehicle.MarcaId = ck.Marca.Id
+     props.vehicle.MarcaId = ck.Marca.Id;
+     props.vehicle.localidad_id = 50000;
      props.vehicle.ModeloId = ck.Modelo.Id;
      props.vehicle.SubmodeloId = ck.SubModelo.Id;
      props.vehicle.es_0km = Number(ck.Anio) > Number(current_year) ? true : false;
      props.vehicle.codia = ck.InfoAutoCodigo;
+   } else {
+     props.vehicle = {
+       codia: null,
+       is_domain: false,
+       provincia_id: 4,
+       localidad_id: 50000,
+       es_0km: false,
+       gnc: false,
+       limiterc: null,
+       ajuste: null,
+       numero: null,
+       uso: 1,
+       MarcaId: null,
+       ModeloId: null,
+       SubmodeloId: null,
+       Accesorios: [],
+       Adicionales: [],
+       Valor: 0
+     }
+     ck = null
    }
 
    console.log(JSON.parse(JSON.stringify(ck)), props.vehicle.es_0km)
    return ck
  });
 
- const findCar = () => {
+ const findCar = async() => {
+   resetModuleField('elnorte', 'carbyplate');
+   $q.loading.show({
+     message: 'Buscando vehiculo...'
+   })
    props.vehicle.is_domain = true;
-   requestModuleData('elnorte', 'integrations/elnorte/carbyplate', 'carbyplate', {patente: plate.value})
+   await requestModuleData('elnorte', 'integrations/elnorte/carbyplate', 'carbyplate', {patente: plate.value})
+   $q.loading.hide()
+   const record = JSON.parse(JSON.stringify(modules.elnorte?.carbyplate));
+   if (Object.keys(record).length == 0) {
+     console.log(record)
+     GlobalNotificator('El vehiculo no se ha encontrado, por favor revise los datos', 'negative')
+   }
  }
 
  const getAdicionales = async () => {
@@ -306,7 +349,7 @@
  const toggleAditional = (id) => {
    const index = props.adicionales.Adicionales.findIndex(el => el.Id == id);
    if (props.adicionales.Adicionales[index].Selected == true) {
-      props.adicionales.Adicionales[index].Selected = false
+     props.adicionales.Adicionales[index].Selected = false
    } else {
      for(let i=0;i<props.adicionales.Adicionales.length;i++) {
        const el = props.adicionales.Adicionales[i]
@@ -338,16 +381,16 @@
 
 <style lang="scss">
 
-#adicionales {
-  .q-btn {
-    height: 100%;
-    width: 100%;
-    .q-icon {
-      font-size: 4rem !important;
-      display: inline-block !important;
-      width: 100%;
-    }
-  }
-}
+ #adicionales {
+   .q-btn {
+     height: 100%;
+     width: 100%;
+     .q-icon {
+       font-size: 4rem !important;
+       display: inline-block !important;
+       width: 100%;
+     }
+   }
+ }
 
 </style>

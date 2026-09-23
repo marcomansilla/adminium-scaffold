@@ -8,7 +8,7 @@ q-page.q-pa-md
   q-table(
     v-model:pagination="pagination"
     :filter="filter_text"
-    @request="(props) => onRequest(props, 'users', 'users/admin/users', filter_text, filter_fields)"
+    @request="(props) => onRequest(props, 'users', 'users/admin/users', filter_text, filter_fields, true)"
     title="Productores"
     :columns="columns"
     :rows="users")

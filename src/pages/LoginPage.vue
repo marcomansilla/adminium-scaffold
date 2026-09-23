@@ -48,7 +48,6 @@
  const login = async () => {
    const res = await loginUser('auth/login', credentials.value);
    if (res.status == 200) {
-     console.log(res, 'skdnskdnsdknsd')
      GlobalNotificator('Sesion iniciada', 'positive');
      router.push('/')
    }

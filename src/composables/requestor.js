@@ -41,11 +41,15 @@ export function useRequests() {
   const onRequest = (props, module, uri, filter_text, filter_fields, secure=false) => {
     props.pagination.filter_text = filter_text;
     props.pagination.filter_fields = filter_fields;
-    getAllData(module, uri, props.pagination);
+    getAllData(module, uri, props.pagination, secure);
   };
 
   const uploadFile = (uri, formdata, secure=false) => {
     return store.uploadFile(uri, formdata);
+  };
+
+  const resetModuleField = (module, field) => {
+    return store.resetModuleField(module, field);
   };
 
   return {
@@ -59,5 +63,6 @@ export function useRequests() {
     onRequest,
     uploadFile,
     modules,
+    resetModuleField
   };
 }

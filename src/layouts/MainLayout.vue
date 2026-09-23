@@ -76,7 +76,7 @@ q-layout(view="lHh Lpr lFf")
        {
          title: 'Mercantil Andina',
          caption: 'Cotizador Mercantil',
-         link: '/admin/cotizador',
+         link: '/admin/cotizadores/mercantil',
        }
      ]
    },

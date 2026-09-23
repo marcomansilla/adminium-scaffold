@@ -38,6 +38,7 @@
         p Total financiado ${{parseFloat(selected_proposal.PremioFinanciado).toLocaleString()}}
         p Importe contado ${{parseFloat(selected_proposal.PremioContado).toLocaleString()}}
         p Prima ${{parseFloat(selected_proposal.Prima).toLocaleString()}}
+        p(v-if="selected_proposal.Franquicia") Franquicia: ${{parseFloat(selected_proposal.Franquicia.Valor).toLocaleString()}}
         q-btn.q-mt-md.full-width(label="Cerrar" icon="close" @click="open_details=false" color="primary")
 </template>
 

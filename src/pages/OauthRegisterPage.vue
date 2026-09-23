@@ -41,8 +41,8 @@
             )
 
             q-input(
-              v-model="form.cuit"
-              label="CUIT *"
+              v-model="form.cuix"
+              label="CUIL/CUIT *"
               lazy-rules
               :rules="[val => !!val || 'No puede estar vacio']"
             )
@@ -99,7 +99,7 @@
    email: '',
    phone: '',
    dni: '',
-   cuit: '',
+   cuix: '',
    address: '',
    city: '',
    birthday: '',
@@ -110,7 +110,7 @@
    saving.value = true
 
    try {
-     const response = await createRecord('users', '/auth/register/complete', form.value, true)
+     const response = await createRecord('users', 'gauth/register/complete', form.value, true)
      console.log('Response:', response)
 
      // Fix: Check different response structures
@@ -139,11 +139,12 @@
    const profile = window.localStorage.getItem('profile')
    if (profile) {
      const userData = JSON.parse(profile)
+     form.value.id = userData.id || ''
      form.value.fullname = userData.fullname || ''
      form.value.email = userData.email || ''
      form.value.phone = userData.phone || ''
      form.value.dni = userData.dni || ''
-     form.value.cuit = userData.cuit || ''
+     form.value.cuix = userData.cuix || ''
      form.value.address = userData.address || ''
      form.value.city = userData.city || ''
      form.value.birthday = userData.birthday || ''

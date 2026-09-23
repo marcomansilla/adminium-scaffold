@@ -82,7 +82,7 @@ q-page.q-pa-md
    codia: null,
    is_domain: false,
    provincia_id: 4,
-   localidad_id: 4,
+   localidad_id: 50000,
    es_0km: false,
    gnc: false,
    limiterc: null,

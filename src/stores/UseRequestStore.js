@@ -293,6 +293,12 @@ export const useRequestStore = defineStore('requests', {
       } catch (error) {
         return error.response?.data || error;
       }
+    },
+
+    async resetModuleField (module, field) {
+      if (this.modules[module] && this.modules[module][field]) {
+        this.modules[module][field]= null;
+      }
     }
   },
 });

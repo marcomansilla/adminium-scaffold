@@ -2,6 +2,7 @@
 .q-pa-md
   .row.justify-center
     .col-sm-8.col-md-6
+    p {{form}}
       q-card
         q-card-section
           .text-h6.text-center Perfil de usuario
@@ -41,8 +42,8 @@
             )
 
             q-input(
-              v-model="form.cuit"
-              label="CUIT *"
+              v-model="form.cuix"
+              label="CUIL/CUIT *"
               lazy-rules
               :rules="[val => !!val || 'No puede estar vacio']"
             )
@@ -82,6 +83,7 @@
 
             q-separator
             q-btn.q-mt-xl(
+              v-if="form.oauth_provider != 'google'"
               size="lg"
               color="blue"
               icon="fab fa-google"
@@ -100,13 +102,13 @@
  const router = useRouter();
  const $q = useQuasar();
  const saving = ref(false);
- const { createRecord } = useRequests();
+ const { createRecord, getModuleData, modules } = useRequests();
  const form = ref({
    fullname: '',
    email: '',
    phone: '',
    dni: '',
-   cuit: '',
+   cuix: '',
    address: '',
    city: '',
    birthday: '',
@@ -116,23 +118,30 @@
  const onSubmit = async () => {
    console.log('subitting')
    saving.value = true
-   console.log(form.value, form)
    try {
-     const response = await createRecord('users', 'auth/register/complete', form.value, true)
-     console.log(response)
-     const user = {}
-     //window.localStorage.setItem('profile', user)
+     const response = await createRecord('users', 'gauth/register/complete', form.value, true)
+     const user = response.data.data.user
+     console.log(user)
+     window.localStorage.setItem('profile', JSON.stringify(user))
      GlobalNotificator('Se ha actualizado el perfil.', 'positive');
-     router.push('/')
+     checkProfile()
    } catch (error) {
-     console.log(error)
      GlobalNotificator('Ha ocurrido un problema con su solicitud, intente nuevamente.', 'danger')
    } finally {
      saving.value = false
    }
  }
 
+ const checkProfile = async() => {
+   await getModuleData('auth', 'auth/profile', 'profile', true)
+     const user = modules?.auth?.profile
+     if (!user) {
+       throw new Error('No se pudo obtener el perfil')
+     }
+   window.localStorage.setItem('profile', JSON.stringify(user))
+ }
  onMounted(() => {
    Object.assign(form.value, JSON.parse(window.localStorage.getItem('profile')))
+   checkProfile()
  })
 </script>

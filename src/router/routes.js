@@ -56,7 +56,14 @@ const routes = [
     ]
   },
   {
-    path: '/auth/oauth',
+    path: '/admin/cotizadores/mercantil',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/quoters/MercantilPage.vue') }
+    ]
+  },
+  {
+    path: '/gauth/oauth',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/OauthPage.vue') }

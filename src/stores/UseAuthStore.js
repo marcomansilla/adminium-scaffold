@@ -66,7 +66,7 @@ export const useAuthStore = defineStore('auth', {
       this.router.push('/login');
     },
     GoogleLogin() {
-      window.location.href = `${this.BASE_URL}/auth/google/login`;
+      window.location.href = `${this.BASE_URL}/gauth/google/login`;
     },
     OauthSet(token) {
       this.token = token;
