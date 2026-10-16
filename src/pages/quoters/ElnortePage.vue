@@ -147,6 +147,7 @@ q-page.q-pa-md
    payload.value.Tomador.DocTipo = tomador.value.tipo_documento;
    payload.value.Tomador.PersonaTipo = tomador.value.tipo_persona;
    payload.value.Tomador.Email = tomador.value.email;
+   payload.value.Vehiculos[0].InfoAutoCodigo = vehiculo.value.codia;
    payload.value.Vehiculos[0].Anio = vehiculo.value.Anio;
    payload.value.Vehiculos[0].MarcaId = vehiculo.value.MarcaId;
    payload.value.Vehiculos[0].Accesorios = vehiculo.value.Accesorios;

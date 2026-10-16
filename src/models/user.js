@@ -13,7 +13,7 @@ export const userModel = ref({
   matricula: '',
   address:'',
   dni: '',
-  cuit: '',
+  cuix: '',
   phone: '',
   birthday: '',
   has_login: false
@@ -46,7 +46,7 @@ export const userFormFields = [
     type: 'text',
   },
     {
-    name: 'cuit',
+    name: 'cuix',
     label: 'CUIT',
     type: 'text',
   },

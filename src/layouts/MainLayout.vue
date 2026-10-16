@@ -54,6 +54,12 @@ q-layout(view="lHh Lpr lFf")
      link: '/admin/cias'
    },
    {
+     title: 'Multi Cotizador',
+     caption: 'Cotizas en varias CIAS',
+     icon: 'request_quote',
+     link: '/admin/multicotizador'
+   },
+   {
      title: 'Cotizadores',
      caption: 'Cotizadores por CIA',
      icon: 'request_quote',

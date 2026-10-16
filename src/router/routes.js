@@ -49,6 +49,13 @@ const routes = [
     ]
   },
   {
+    path: '/admin/multicotizador',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/MultiQuoterPage.vue') }
+    ]
+  },
+  {
     path: '/admin/cotizadores/elnorte',
     component: () => import('layouts/MainLayout.vue'),
     children: [
