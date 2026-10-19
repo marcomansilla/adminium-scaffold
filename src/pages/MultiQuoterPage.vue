@@ -62,66 +62,17 @@ q-page.q-pa-md
             true-value="SI"
             false-value="NO"
             v-model="payload.gnc")
-        .col-3.q-pa-md
+        .col-12.q-pa-md
           q-btn.full-width(
             color="primary"
             label="Cotizar"
             icon="no_crash"
             @click="sendData")
   div.mp-box(v-if="rus_quotes.success")
-    p.mp-title Propuestas RUS
-    .row
-      .col-md-3.col-sm-4.col-xs-12.col-lg-2.col-xl-2.q-pa-sm(
-        v-for="alternativa in rus_quotes.data")
-        .mp-box
-          .head.flex.flex-center
-            .row
-              .col-12
-                .title.text-h5 {{alternativa.descripcionComercial ? alternativa.descripcionComercial : alternativa.codigoRC}}
-              .col-12
-                div.q-mt-md(v-if="alternativa.franquicia")
-                  p.text-bold Franquicia ${{Number(alternativa.franquicia).toLocaleString()}}
-          div.q-pa-md.flex.flex-center
-            .row
-              .col-12
-                .text-h6.center ${{Number(alternativa.premio).toLocaleString()}} de contado
-              .col-12.center
-                p.separator O
-              .col-12.center
-                p.center 4 cuotas de
-                .text-h5.center.cuota.text-bold ${{Number(alternativa.premio).toLocaleString()/4}}
-          q-btn.full-width(
-            label="Detalles"
-            @click="display_details(alternativa)")
+    rus-options-component(:options="rus_quotes.data")
   div.mp-box(v-if="en_quotes.success")
-    p.mp-title Propuestas El Norte
-    .row
-      .col-md-3.col-sm-4.col-xs-12.col-lg-2.col-xl-2.q-pa-sm(
-        v-for="alternativa in en_quotes.data"
-        :class="getClass(alternativa.PlanCobertura.Letra)")
-        .mp-box
-          .head.flex.flex-center
-            .row
-              .col-12
-                .title.text-h4 {{alternativa.PlanCobertura.Letra}}
-              .col-12
-                div.q-mt-md(v-if="alternativa.Franquicia")
-                  p.text-bold Franquicia ${{Number(alternativa.Franquicia.Valor).toLocaleString()}}
-          div.q-pa-md.flex.flex-center
-            .row
-              .col-12
-                .text-h6.center ${{Number(alternativa.PremioContado).toLocaleString()}} de contado
-              .col-12.center
-                p.separator O
-              .col-12.center
-                p.center 4 cuotas de
-                .text-h4.center.cuota.text-bold ${{Number(alternativa.CuotaImporte).toLocaleString()}}
-              .col-12.center
-                p Total financiado ${{Number(alternativa.PremioFinanciado).toLocaleString()}}
-          q-btn.full-width(
-            :class="getClass(alternativa.PlanCobertura.Letra)"
-            label="Detalles"
-            @click="display_details(alternativa)")
+    en-options-component(:options="en_quotes.data")
+
 </template>
 
 <script setup>
@@ -130,9 +81,13 @@ q-page.q-pa-md
  import { useRequests } from '../composables/requestor';
  import { GlobalNotificator } from '../composables/notificator.js';
  import { Provincias } from '../utils/provincias';
+ import RusOptionsComponent from '../components/quoters/RusOptionsComponent.vue';
+ import EnOptionsComponent from '../components/quoters/EnOptionsComponent.vue';
 
  const $q = useQuasar();
- const provincias_list = ref(Provincias)
+ const provincias_list = ref(Provincias);
+ const open_details = ref(false);
+ const selected_proposal = ref({});
  const { getModuleData, requestModuleData, modules, resetModuleField } = useRequests();
  const plate = ref('');
  const payload = ref({
@@ -165,23 +120,27 @@ q-page.q-pa-md
    return vehicle
  })
 
- const getClass = (letra) => {
-   if (letra.toLowerCase().includes('a')) {
-     return "estilo_a"
+ const proposalAditionals = computed(()=>{
+   var result = [];
+   var selected_aditionals = [];
+   if (Object.keys(selected_proposal.value)) {
+     selected_aditionals = selected_proposal.value.Adicionales.map(a => a.Id)
+     props.adicionales.Adicionales.forEach(a => {
+       if (selected_aditionals.includes(a.Id)) {
+         result.push(a)
+       }
+     })
    }
+   return result
+ })
 
-   if (letra.toLowerCase().includes('b')) {
-     return "estilo_b"
-   }
-
-   if (letra.toLowerCase().includes('c')) {
-     return "estilo_c"
-   }
-
-   if (letra.toLowerCase().includes('d')) {
-     return "estilo_d"
-   }
+ const display_details = (dt, cia) => {
+   selected_proposal.value = JSON.parse(JSON.stringify(dt))
+   selected_proposal.value.cia = cia
+   open_details.value = true;
  }
+
+
 
  const rus_quotes = computed(() => {
    const quotes = modules.quoter?.rusquotes
@@ -289,63 +248,6 @@ q-page.q-pa-md
      border-radius: 10px 10px 0 0;
      color: #fff;
      background-color: blue;
-   }
- }
-
- .estilo_a {
-   .head, .q-btn {
-     background-color: #fcc900
-   }
-
-   .q-btn {
-     color: #ffffff;
-   }
-
-   .cuota {
-     color: #fcc900
-   }
-
- }
-
- .estilo_b {
-   .head, .q-btn {
-     background-color: #ac9672
-   }
-
-   .q-btn {
-     color: #ffffff;
-   }
-
-   .cuota {
-     color: #ac9672
-   }
- }
-
- .estilo_c {
-   .head, .q-btn {
-     background-color: #408a54
-   }
-
-   .q-btn {
-     color: #ffffff;
-   }
-
-   .cuota {
-     color: #408a54
-   }
- }
-
- .estilo_d {
-   .head, .q-btn {
-     background-color: #0078e2
-   }
-
-   .q-btn {
-     color: #ffffff;
-   }
-
-   .cuota {
-     color: #0078e2
    }
  }
 
