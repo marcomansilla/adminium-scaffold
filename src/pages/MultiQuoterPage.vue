@@ -6,7 +6,8 @@ q-page.q-pa-md
       p.mp-title Dominio
       .row.full-width.flex.flex-center
         .col-12.q-pa-lg.centered
-          q-input(
+          q-input.centered(
+            style="width: 40%; margin: auto"
             label="Dominio"
             stack-label
             v-model="plate")
@@ -62,16 +63,26 @@ q-page.q-pa-md
             true-value="SI"
             false-value="NO"
             v-model="payload.gnc")
-        .col-12.q-pa-md
-          q-btn.full-width(
+        .col-6.q-pa-md
+          q-btn.float-right(
             color="primary"
             label="Cotizar"
             icon="no_crash"
             @click="sendData")
-  div.mp-box(v-if="rus_quotes.success")
-    rus-options-component(:options="rus_quotes.data")
+        .col-6.q-pa-md
+          q-btn(
+            color="warning"
+            label="Nueva busqueda"
+            icon="edit"
+            @click="newCar")
   div.mp-box(v-if="en_quotes.success")
     en-options-component(:options="en_quotes.data")
+  div.mp-box(v-if="ma_quotes.success")
+    ma-options-component(:options="ma_quotes.data")
+  div.mp-box(v-if="rus_quotes.success")
+    rus-options-component(:options="rus_quotes.data")
+  div.mp-box(v-if="lps_quotes.success")
+    lps-options-component(:options="lps_quotes.data")
 
 </template>
 
@@ -83,6 +94,8 @@ q-page.q-pa-md
  import { Provincias } from '../utils/provincias';
  import RusOptionsComponent from '../components/quoters/RusOptionsComponent.vue';
  import EnOptionsComponent from '../components/quoters/EnOptionsComponent.vue';
+ import MaOptionsComponent from '../components/quoters/MaOptionsComponent.vue';
+ import LpsOptionsComponent from '../components/quoters/LpsOptionsComponent.vue';
 
  const $q = useQuasar();
  const provincias_list = ref(Provincias);
@@ -102,6 +115,15 @@ q-page.q-pa-md
  const display_data = ref({
    secured_amount: 0
  })
+
+ const newCar = () => {
+   resetModuleField('elnorte', 'carbyplate');
+   resetModuleField('quoter', 'rusquotes');
+   resetModuleField('quoter', 'elnortequotes');
+   resetModuleField('quoter', 'maquotes');
+   resetModuleField('quoter', 'lpsquotes');
+}
+
  const current_vehicle = computed(() => {
    const vehicle = modules.elnorte?.carbyplate
 
@@ -153,7 +175,22 @@ q-page.q-pa-md
 
  const en_quotes = computed(() => {
    const quotes = modules.quoter?.elnortequotes
-   console.log(quotes)
+   if (quotes) {
+     return quotes
+   }
+   return []
+ })
+
+ const ma_quotes = computed(() => {
+   const quotes = modules.quoter?.maquotes
+   if (quotes) {
+     return quotes
+   }
+   return []
+ })
+
+ const lps_quotes = computed(() => {
+   const quotes = modules.quoter?.lpsquotes
    if (quotes) {
      return quotes
    }
@@ -191,54 +228,44 @@ q-page.q-pa-md
  const findCar = async() => {
    resetModuleField('elnorte', 'carbyplate');
    $q.loading.show({ message: 'Buscando vehiculo...'})
-   await requestModuleData('elnorte', 'integrations/elnorte/carbyplate', 'carbyplate', {patente: plate.value})
+   await requestModuleData('elnorte', 'integrations/quoters/elnorte/carbyplate', 'carbyplate', {patente: plate.value})
    $q.loading.hide()
    const record = JSON.parse(JSON.stringify(modules.elnorte?.carbyplate));
    if (Object.keys(record).length == 0) {
-     console.log(record)
      GlobalNotificator('El vehiculo no se ha encontrado, por favor revise los datos', 'negative')
    }
  }
 
  const sendData = async () => {
    const zip = payload.value.localidad_id;
-   $q.loading.show({ message: 'Buscando propuestas...'})
    payload.value.codia = current_vehicle.value.codia;
    payload.value.year = current_vehicle.value.year;
    payload.value.secured_amount = current_vehicle.value.secured_amount;
    payload.value.zip = zip % 10 === 0 ? zip / 10 : zip
-   await requestModuleData('quoter', 'integrations/rus/multipolizas', 'rusquotes', payload.value)
-   await requestModuleData('quoter', 'integrations/elnorte/multipolizas', 'elnortequotes', payload.value)
+   $q.loading.show({ message: 'Buscando propuestas en RUS...'})
+   await requestModuleData('quoter', 'integrations/quoters/rus/multipolizas', 'rusquotes', payload.value)
+   $q.loading.hide()
+   $q.loading.show({ message: 'Buscando propuestas en El Norte...'})
+   await requestModuleData('quoter', 'integrations/quoters/elnorte/multipolizas', 'elnortequotes', payload.value)
+   $q.loading.hide()
+   $q.loading.show({ message: 'Buscando propuestas en Mercantil Andina...'})
+   await requestModuleData('quoter', 'integrations/quoters/mercantil/multipolizas', 'maquotes', payload.value)
+   $q.loading.hide()
+   $q.loading.show({ message: 'Buscando propuestas en La Perseverancia Seguros...'})
+   await requestModuleData('quoter', 'integrations/quoters/lps/multipolizas', 'lpsquotes', payload.value)
    $q.loading.hide()
  }
 
  watch(() => payload.value.provincia_id, async (nv, ov) => {
-   await requestModuleData('elnorte', 'integrations/elnorte/localidades', 'localidades', {provincia_id: nv})
+   await requestModuleData('elnorte', 'integrations/quoters/elnorte/localidades', 'localidades', {provincia_id: nv})
  })
 
  onMounted(async() => {
-   await requestModuleData('elnorte', 'integrations/elnorte/localidades', 'localidades', {provincia_id: payload.value.provincia_id})
+   await requestModuleData('elnorte', 'integrations/quoters/elnorte/localidades', 'localidades', {provincia_id: payload.value.provincia_id})
  })
 </script>
 
 <style lang="scss" scoped>
- .card {
-   padding: 1em;
-   &-body {
-     border: 2px solid #c0c0c0;
-     padding-bottom: 5px;
-   }
-   &-title {
-     font-size: 1.3em;
-     padding-top: 10px;
-     font-weight: bold;
-     height: 2.5em;
-     background-color: #001BDA;
-     color: #fff;
-     width: 100%;
-   }
- }
-
   .mp-box {
    .head {
      height: 8em;
@@ -269,5 +296,9 @@ q-page.q-pa-md
    flex: 1;
    height: 2px;
    background: #c0c0c0;
+ }
+ .q-loading__message {
+   font-size:1.5em !important;
+   font-weight: bold !important;
  }
 </style>

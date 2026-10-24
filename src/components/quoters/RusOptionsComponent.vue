@@ -1,6 +1,6 @@
 <template lang="pug">
 div#rus_options
-  p.mp-title Propuestas RUS
+  .text-h4.mp-title Propuestas RUS - Anual
   .row
     .col-md-3.col-sm-6.col-xs-12.col-lg-2.col-xl-2.q-pa-sm(
       v-for="option in props.options")
@@ -20,7 +20,7 @@ div#rus_options
               p.separator O
             .col-12.center
               p.center 4 cuotas de
-              .text-h5.center.cuota.text-bold ${{Number(option.premio).toLocaleString()/4}}
+              .text-h5.center.cuota.text-bold ${{Number(option.premio/4).toLocaleString()}}
         q-btn.full-width(
           label="Detalles"
           @click="display_details(option)"

@@ -59,8 +59,21 @@ q-page.q-pa-md
 
  // Required variables
  const $q = useQuasar();
- const { validate, clearError, Errors, clearAllFormErrors, injectError } = useValidator();
- const { getAllData, deleteRecord, createRecord, updateRecord, modules, onRequest, getModuleData } = useRequests();
+ const {
+   validate,
+   clearError,
+   Errors,
+   clearAllFormErrors,
+   injectError } = useValidator();
+ const {
+   getAllData,
+   deleteRecord,
+   createRecord,
+   updateRecord,
+   modules,
+   onRequest,
+   getModuleData } = useRequests();
+
  const filter_text = ref('');
  const filter_fields = 'fullname, dni, email, matricula'
  const users = computed(() => modules.users?.data);
@@ -74,8 +87,7 @@ q-page.q-pa-md
    { name: 'matricula', align: 'left',label: 'Matricula', field: 'matricula', sortable: false },
    { name: 'cuit', align: 'left',label: 'CUIT', field: 'cuit', sortable: false },
    { name: 'phone', align: 'left',label: 'Telefono', field: 'phone', sortable: false },
-   { name: 'cias', align: 'center',label: 'CIAS', field: 'cias_count', sortable: false },
-   { name: 'cias_btn', align: 'center',label: '', sortable: false },
+   { name: 'cias_btn', align: 'center',label: 'Ver CIAS', sortable: false },
    { name: 'open', align: 'center',label: 'Ver', sortable: false },
    { name: 'delete', align: 'center',label: 'Eliminar', sortable: false },
  ]

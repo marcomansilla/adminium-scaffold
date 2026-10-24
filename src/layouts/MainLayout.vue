@@ -60,32 +60,38 @@ q-layout(view="lHh Lpr lFf")
      link: '/admin/multicotizador'
    },
    {
-     title: 'Cotizadores',
-     caption: 'Cotizadores por CIA',
-     icon: 'request_quote',
-     submenu: [
-       {
-         title: 'El norte',
-         caption: 'Cotizador el norte',
-         link: '/admin/cotizadores/elnorte',
-       },
-       {
-         title: 'La Perseverancia',
-         caption: 'Cotizador LPS',
-         link: '/admin/cotizador',
-       },
-       {
-         title: 'RUS',
-         caption: 'Cotizador RUS',
-         link: '/admin/cotizador',
-       },
-       {
-         title: 'Mercantil Andina',
-         caption: 'Cotizador Mercantil',
-         link: '/admin/cotizadores/mercantil',
-       }
-     ]
+     title: 'Polizas Activas',
+     caption: 'Listado de polizas activas',
+     icon: 'fact_check',
+     link: '/admin/multicotizador'
    },
+   /* {
+    *   title: 'Cotizadores',
+    *   caption: 'Cotizadores por CIA',
+    *   icon: 'request_quote',
+    *   submenu: [
+    *     {
+    *       title: 'El norte',
+    *       caption: 'Cotizador el norte',
+    *       link: '/admin/cotizadores/elnorte',
+    *     },
+    *     {
+    *       title: 'La Perseverancia',
+    *       caption: 'Cotizador LPS',
+    *       link: '/admin/cotizador',
+    *     },
+    *     {
+    *       title: 'RUS',
+    *       caption: 'Cotizador RUS',
+    *       link: '/admin/cotizador',
+    *     },
+    *     {
+    *       title: 'Mercantil Andina',
+    *       caption: 'Cotizador Mercantil',
+    *       link: '/admin/cotizadores/mercantil',
+    *     }
+    *   ]
+    * }, */
    {
      title: 'Eventos',
      caption: 'Notificaciones',

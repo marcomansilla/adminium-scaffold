@@ -1,33 +1,33 @@
 <template lang="pug">
 div#en_options
-  p.mp-title Propuestas El Norte
-      .row
-        .col-md-3.col-sm-4.col-xs-12.col-lg-2.col-xl-2.q-pa-sm(
-          v-for="alternativa in props.options"
-          :class="getClass(alternativa.PlanCobertura.Letra)")
-          .mp-box
-            .head.flex.flex-center
-              .row
-                .col-12
-                  .title.text-h4 {{alternativa.PlanCobertura.Letra}}
-                .col-12
-                  div.q-mt-md(v-if="alternativa.Franquicia")
-                    p.text-bold Franquicia ${{Number(alternativa.Franquicia.Valor).toLocaleString()}}
-            div.q-pa-md.flex.flex-center
-              .row
-                .col-12
-                  .text-h6.center ${{Number(alternativa.PremioContado).toLocaleString()}} de contado
-                .col-12.center
-                  p.separator O
-                .col-12.center
-                  p.center 4 cuotas de
-                  .text-h4.center.cuota.text-bold ${{Number(alternativa.CuotaImporte).toLocaleString()}}
-                .col-12.center
-                  p Total financiado ${{Number(alternativa.PremioFinanciado).toLocaleString()}}
-            q-btn.full-width(
-              :class="getClass(alternativa.PlanCobertura.Letra)"
-              label="Detalles"
-              @click="display_details(alternativa, 'en')")
+  .text-h4.mp-title Propuestas El Norte - Anual
+  .row
+    .col-md-3.col-sm-4.col-xs-12.col-lg-2.col-xl-2.q-pa-sm(
+      v-for="alternativa in props.options"
+      :class="getClass(alternativa.PlanCobertura.Letra)")
+      .mp-box
+        .head.flex.flex-center
+          .row
+            .col-12
+              .title.text-h4 {{alternativa.PlanCobertura.Letra}}
+            .col-12
+              div.q-mt-md(v-if="alternativa.Franquicia")
+                p.text-bold Franquicia ${{Number(alternativa.Franquicia.Valor).toLocaleString()}}
+        div.q-pa-md.flex.flex-center
+          .row
+            .col-12
+              .text-h6.center ${{Number(alternativa.PremioContado).toLocaleString()}} de contado
+            .col-12.center
+              p.separator O
+            .col-12.center
+              p.center 4 cuotas de
+              .text-h4.center.cuota.text-bold ${{Number(alternativa.CuotaImporte).toLocaleString()}}
+            .col-12.center
+              p Total financiado ${{Number(alternativa.PremioFinanciado).toLocaleString()}}
+        q-btn.full-width(
+          :class="getClass(alternativa.PlanCobertura.Letra)"
+          label="Detalles"
+          @click="display_details(alternativa, 'en')")
   q-dialog(v-model="open_details" backdrop-filter="blur(4px)")
     q-card(style="width: 700px; max-width: 80vw")
       q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white Detalles cobertura {{selected_proposal.PlanCobertura.Letra}}
