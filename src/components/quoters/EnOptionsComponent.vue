@@ -2,7 +2,7 @@
 div#en_options
   .text-h4.mp-title Propuestas El Norte - Anual
   .row
-    .col-md-3.col-sm-4.col-xs-12.col-lg-2.col-xl-2.q-pa-sm(
+    .col-md-3.col-sm-4.col-xs-12.col-lg-3.col-xl-2.q-pa-sm(
       v-for="alternativa in props.options"
       :class="getClass(alternativa.PlanCobertura.Letra)")
       .mp-box

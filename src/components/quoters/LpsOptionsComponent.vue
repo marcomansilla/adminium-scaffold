@@ -2,13 +2,13 @@
 div#lps_options
   .text-h4.mp-title Propuestas LPS - Anual
   .row
-    .col-md-3.col-sm-6.col-xs-12.col-lg-2.col-xl-2.q-pa-sm(
+    .col-md-3.col-sm-6.col-xs-12.col-lg-3.col-xl-2.q-pa-sm(
       v-for="option in props.options")
       .mp-box
         .head.flex.flex-center
           .row
             .col-12
-              .title.text-h5 {{option.cobertura_descripcion ? option.cobertura_descripcion : option.cobertura}}
+              .title.text-h6 {{option.cobertura_descripcion ? option.cobertura_descripcion : option.cobertura}}
             .col-12
               div.q-mt-md(v-if="option.franquicia")
                 p.text-bold Franquicia ${{Number(option.franquicia).toLocaleString()}}
@@ -78,12 +78,12 @@ div#lps_options
      width: 100%;
      padding: .5em;
      border-radius: 10px 10px 0 0;
-     color: #fff;
-     background-color: #0078E2;
+     color: #CF112F;
+     background-color: #FFD600;
    }
  }
  .q-btn {
-   background-color: #0078E2;
-   color: #fff;
+   background-color: #FFD600;
+   color: #CF112F;
  }
 </style>

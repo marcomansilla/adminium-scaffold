@@ -2,7 +2,7 @@
 div#rus_options
   .text-h4.mp-title Propuestas RUS - Anual
   .row
-    .col-md-3.col-sm-6.col-xs-12.col-lg-2.col-xl-2.q-pa-sm(
+    .col-md-3.col-sm-6.col-xs-12.col-lg-3.col-xl-2.q-pa-sm(
       v-for="option in props.options")
       .mp-box
         .head.flex.flex-center
