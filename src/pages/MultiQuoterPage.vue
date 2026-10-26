@@ -242,14 +242,18 @@ q-page.q-pa-md
    payload.value.year = current_vehicle.value.year;
    payload.value.secured_amount = current_vehicle.value.secured_amount;
    payload.value.zip = zip % 10 === 0 ? zip / 10 : zip
+   resetModuleField('quoter', 'rusquotes');
+   resetModuleField('quoter', 'elnortequotes');
+   resetModuleField('quoter', 'maquotes');
+   resetModuleField('quoter', 'lpsquotes');
+   $q.loading.show({ message: 'Buscando propuestas en Mercantil Andina...'})
+   await requestModuleData('quoter', 'integrations/quoters/mercantil/multipolizas', 'maquotes', payload.value)
+   $q.loading.hide()
    $q.loading.show({ message: 'Buscando propuestas en RUS...'})
    await requestModuleData('quoter', 'integrations/quoters/rus/multipolizas', 'rusquotes', payload.value)
    $q.loading.hide()
    $q.loading.show({ message: 'Buscando propuestas en El Norte...'})
    await requestModuleData('quoter', 'integrations/quoters/elnorte/multipolizas', 'elnortequotes', payload.value)
-   $q.loading.hide()
-   $q.loading.show({ message: 'Buscando propuestas en Mercantil Andina...'})
-   await requestModuleData('quoter', 'integrations/quoters/mercantil/multipolizas', 'maquotes', payload.value)
    $q.loading.hide()
    $q.loading.show({ message: 'Buscando propuestas en La Perseverancia Seguros...'})
    await requestModuleData('quoter', 'integrations/quoters/lps/multipolizas', 'lpsquotes', payload.value)
