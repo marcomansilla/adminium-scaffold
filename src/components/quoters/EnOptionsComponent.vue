@@ -30,12 +30,14 @@ div#en_options
           @click="display_details(alternativa, 'en')")
   q-dialog(v-model="open_details" backdrop-filter="blur(4px)")
     q-card(style="width: 700px; max-width: 80vw")
-      q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white Detalles cobertura {{selected_proposal.PlanCobertura.Letra}}
+      q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white El Norte - Detalles cobertura {{selected_proposal.PlanCobertura.Letra}}
       q-card-section
-        p Cobertura: {{selected_proposal.PlanCobertura.Descripcion}}
-        p Adicionales
-        ul
-          li(v-for="aditional in parseAditionals") {{aditional.Nombre}}
+        .text-h6 Cobertura: {{selected_proposal.PlanCobertura.Descripcion}}
+        br
+        div(v-if="parseAditionals.length")
+          p Adicionales
+          ul
+            li(v-for="aditional in parseAditionals") {{aditional.Nombre}}
         p Importe cuota ${{parseFloat(selected_proposal.CuotaImporte).toLocaleString()}}
         p Total financiado ${{parseFloat(selected_proposal.PremioFinanciado).toLocaleString()}}
         p Importe contado ${{parseFloat(selected_proposal.PremioContado).toLocaleString()}}
@@ -106,16 +108,18 @@ div#en_options
  }
 
  const parseAditionals = computed(() => {
-  const selected = selected_proposal.value.Adicionales.map(a => a.Id);
-  const result = [];
-  aditionals.forEach(a => {
-    if (selected.includes(a.Id)) {
-      result.push(a)
-    }
-  console.log(result)
-  })
-  return result
+   const selected = selected_proposal.value.Adicionales ? selected_proposal.value.Adicionales.map(a => a.Id) : [];
+   const result = [];
+   if (selected.length) {
+     aditionals.forEach(a => {
+       if (selected.includes(a.Id)) {
+         result.push(a)
+       }
+     })
+   }
+   return result
  })
+
  const getClass = (letra) => {
    if (letra.toLowerCase().includes('a')) {
      return "estilo_a"

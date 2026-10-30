@@ -27,7 +27,7 @@ div#lps_options
           icon="list")
   q-dialog(v-model="open_details" backdrop-filter="blur(4px)")
     q-card(style="width: 700px; max-width: 80vw")
-      q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white Detalles cobertura {{selected_proposal.cobertura_descripcion ? selected_proposal.cobertura_descripcion : selected_proposal.cobertura}}
+      q-card-section.row.items-center.q-pb-none.text-h6.bg-primary.text-white LPS - Detalles cobertura {{selected_proposal.cobertura_descripcion ? selected_proposal.cobertura_descripcion : selected_proposal.cobertura}}
       q-card-section
         p Cobertura: {{selected_proposal.cobertura_descripcion ? selected_proposal.cobertura_descripcion : selected_proposal.cobertura}}
         p Detalles

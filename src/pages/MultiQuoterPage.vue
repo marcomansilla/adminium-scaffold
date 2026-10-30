@@ -20,9 +20,7 @@ q-page.q-pa-md
         .col-3.q-pa-md
           q-input(label="Marca" v-model="current_vehicle.brand" disable)
         .col-3.q-pa-md
-          q-input(label="Modelo" v-model="current_vehicle.model" disable)
-        .col-3.q-pa-md
-          q-input(label="Version" v-model="current_vehicle.version" disable)
+          q-input(label="Modelo" v-model="computedModel" disable)
         .col-3.q-pa-md
           q-input(label="Año" v-model="current_vehicle.year" disable)
         .col-3.q-pa-md
@@ -55,7 +53,10 @@ q-page.q-pa-md
             :option-value="opt => (Object(opt) === opt && 'LocalidadId' in opt ? opt.LocalidadId : null)"
             :option-label="opt => (Object(opt) === opt && 'NombreCompleto' in opt ? opt.NombreCompleto : null)"
             emit-value
-            map-options)
+            map-options
+            :error="Object.keys(Errors).includes('localidad')"
+            :error-message="Errors['localidad']"
+            @update:model-value="() => {clearError('localidad')}")
         .col-3.q-pa-md
           q-toggle(
             label="Tiene GNC"
@@ -63,6 +64,14 @@ q-page.q-pa-md
             true-value="SI"
             false-value="NO"
             v-model="payload.gnc")
+        .col-3.q-pa-md
+          q-input(
+            label="Valor GNC"
+            v-model="payload.gnc_value"
+            :disable="payload.gnc == 'NO'"
+            :error="Object.keys(Errors).includes('gnc')"
+            :error-message="Errors['gnc']"
+            @update:model-value="() => {clearError('gnc')}")
         .col-6.q-pa-md
           q-btn.float-right(
             color="primary"
@@ -103,13 +112,15 @@ q-page.q-pa-md
  const selected_proposal = ref({});
  const { getModuleData, requestModuleData, modules, resetModuleField } = useRequests();
  const plate = ref('');
+ const Errors = ref({});
  const payload = ref({
    zip: '',
    gnc: 'NO',
    is0km: false,
    secured_amount: 0,
    provincia_id: 4,
-   localidad_id: null
+   localidad_id: null,
+   gnc_value: null
  })
  const localidades_list = ref([]);
  const display_data = ref({
@@ -122,14 +133,14 @@ q-page.q-pa-md
    resetModuleField('quoter', 'elnortequotes');
    resetModuleField('quoter', 'maquotes');
    resetModuleField('quoter', 'lpsquotes');
-}
+ }
 
  const current_vehicle = computed(() => {
    const vehicle = modules.elnorte?.carbyplate
 
    if (vehicle) {
      const secured_amount = JSON.parse(JSON.stringify(vehicle.Valores.filter(vl => vl.Anio == vehicle.Anio)[0]));
-     display_data.value.secured_amount = secured_amount.Valor.toLocaleString();
+     display_data.value.secured_amount = Number(secured_amount.Valor).toLocaleString();
      return {
        brand: vehicle.Marca.Nombre,
        model: vehicle.Modelo.Nombre,
@@ -140,6 +151,14 @@ q-page.q-pa-md
      }
    }
    return vehicle
+ })
+
+ const computedModel = computed(() => {
+   let model = ''
+   if (current_vehicle.value) {
+     model = `${current_vehicle.value.model} - ${current_vehicle.value.version}`
+   }
+   return model
  })
 
  const proposalAditionals = computed(()=>{
@@ -237,6 +256,20 @@ q-page.q-pa-md
  }
 
  const sendData = async () => {
+   if (!payload.value.localidad_id) {
+     GlobalNotificator('Debe seleccionar la localidad!.', 'negative')
+     Errors.value.localidad= 'Debe seleccionar la localidad.'
+     return 1
+   }
+   if (payload.value.gnc == 'SI') {
+     if (!payload.value.gnc_value) {
+       GlobalNotificator('Debe ingresar el monto asegurado del equipo de GNC.', 'negative')
+       Errors.value.gnc= 'Debe ingresar el monto asegurado.'
+       return 1
+     }
+   } else {
+     payload.value.gnc_value = null
+   }
    const zip = payload.value.localidad_id;
    payload.value.codia = current_vehicle.value.codia;
    payload.value.year = current_vehicle.value.year;
@@ -247,7 +280,7 @@ q-page.q-pa-md
    resetModuleField('quoter', 'maquotes');
    resetModuleField('quoter', 'lpsquotes');
    $q.loading.show({ message: 'Buscando propuestas en Mercantil Andina...'})
-   await requestModuleData('quoter', 'integrations/quoters/mercantil/multipolizas', 'maquotes', payload.value)
+   //await requestModuleData('quoter', 'integrations/quoters/mercantil/multipolizas', 'maquotes', payload.value)
    $q.loading.hide()
    $q.loading.show({ message: 'Buscando propuestas en RUS...'})
    await requestModuleData('quoter', 'integrations/quoters/rus/multipolizas', 'rusquotes', payload.value)
@@ -260,6 +293,9 @@ q-page.q-pa-md
    $q.loading.hide()
  }
 
+ const clearError = (field) => {
+   delete Errors.value[field]
+ }
  watch(() => payload.value.provincia_id, async (nv, ov) => {
    await requestModuleData('elnorte', 'integrations/quoters/elnorte/localidades', 'localidades', {provincia_id: nv})
  })
